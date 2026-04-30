@@ -13,6 +13,19 @@ Ticket IDs follow the `PROBE-N` scheme defined in the project brief. Epics (PROB
 | Date | Ticket | Owner | Status | Summary | Files touched |
 | --- | --- | --- | --- | --- | --- |
 | 2026-04-30 | — | lead | done | Scaffolded `/shared/` (contracts.md, tickets-status.md, mailbox/) | shared/contracts.md, shared/tickets-status.md, shared/mailbox/*.md |
+| 2026-04-30 | — | lead | done | Bootstrap: git init, `pyproject.toml`, `uv sync` (Python 3.11), package skeleton, top-level `CLAUDE.md` + `README.md` | .gitignore, pyproject.toml, README.md, uv.lock, morpheus/__init__.py, morpheus/paths.py |
+| 2026-04-30 | PROBE-2 | data | done | env pinned via uv (Python 3.11), all deps installed; MPS available | pyproject.toml, uv.lock |
+| 2026-04-30 | PROBE-3 | embed | done | Geneformer weights pulled from HF (V1-10M chosen for 24 GB target: 256-dim, 6L, 4H, vocab 25426); forward pass verified on smoke test | data/raw/geneformer_weights/ |
+| 2026-04-30 | PROBE-4 | data | done | Census API verified; tutorial-equivalent query returns AnnData | morpheus/data/pull_census.py |
+| 2026-04-30 | PROBE-5 | data | done | 100k blood/normal cells, 15 donors, 71 cell types pulled and log1p-normalized to `cells.h5ad` | morpheus/data/pull_census.py, data/processed/cells.h5ad |
+| 2026-04-30 | PROBE-6 | data | done | DoRothEA A/B/C (32k) ∪ CollecTRI (43k) = 75k edges via decoupler 2.x | morpheus/data/pull_dorothea.py, data/processed/dorothea_edges.prevocab.parquet |
+| 2026-04-30 | PROBE-7 | data | done | gene_id_map built; vocab filter retains 73,269 edges across 1,194 TFs (97% retention after Geneformer-vocab restriction) | morpheus/data/build_gene_map.py, data/processed/{gene_id_map,dorothea_edges}.parquet |
+| 2026-04-30 | PROBE-20 | controls | done | donor-stratified 5-fold splits built; assertion in build_splits.py passes (15 donors, each in exactly one fold) | morpheus/data/build_splits.py, data/processed/splits.parquet |
+| 2026-04-30 | PROBE-9 | embed | in-progress | Geneformer cell-embedding extraction running in background on 100k cells; ETA ~2.7h on MPS, batch=16, chunk=2000, dynamic-truncated | morpheus/embed/extract.py |
+| 2026-04-30 | PROBE-10 | embed | done | Gene token embeddings (input lookup table) extracted to `embeddings/geneformer/genes.npy` (25426 × 256) at start of extraction | morpheus/embed/extract.py |
+| 2026-04-30 | PROBE-15 | probe | done | Layer 3 hub probe: hub AUC 0.67–0.79 across 5 folds (median 0.70) on Geneformer V1-10M gene token embeddings; RSA Spearman ρ=-0.028 vs DoRothEA TF-TF adjacency | morpheus/probes/run.py, results/probes/layer3__geneformer.parquet, results/rsa/rsa__geneformer.parquet |
+| 2026-04-30 | PROBE-14 | probe | done | Layer 2 TF→target probe: 375/1194 TFs met threshold; median AUC 0.702, IQR [0.633, 0.765] on Geneformer gene embeddings with expression-matched negatives | morpheus/probes/run.py, results/probes/layer2__geneformer.parquet |
+| 2026-04-30 | — | lead | in-progress | Chained pipeline (`scripts/run_rest.sh`) running detached: waits for geneformer extraction, then runs random_init extraction, bag_of_genes, all probes incl. permuted control, stats, figures. Logs at `/tmp/morpheus_run_rest.log` | scripts/run_rest.sh |
 
 ---
 

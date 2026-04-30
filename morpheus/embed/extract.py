@@ -206,9 +206,11 @@ def main() -> None:
     cell_index = pd.DataFrame({"row": np.arange(len(cell_ids_out), dtype=np.int64), "cell_id": cell_ids_out})
     cell_index.to_parquet(out_dir / "cell_index.parquet", index=False)
 
-    # Attention pass — small, so reload model with eager and process only the sampled cells.
+    # Attention pass — small, eager, dynamic-truncated per cell. Saved as a list of variable-shape arrays
+    # to avoid the 40 GB cost of padding everything to (T=2048).
     if att_idx_set:
-        print(f"attention pass: {len(att_idx_set)} cells with eager attention ...")
+        ATT_MAX_TOKENS = 256  # cap token axis to keep size manageable; first 256 ranked tokens carry the bulk of signal
+        print(f"attention pass: {len(att_idx_set)} cells with eager attention (ATT_MAX_TOKENS={ATT_MAX_TOKENS}) ...")
         del model
         if device.type == "mps":
             torch.mps.empty_cache()
@@ -218,7 +220,6 @@ def main() -> None:
         with torch.no_grad():
             for i_start in tqdm(range(0, len(sorted_att_idx), args.batch_size), desc="attention"):
                 gi_batch = sorted_att_idx[i_start : i_start + args.batch_size]
-                # Re-tokenize only these cells.
                 X_rows = adata.X[gi_batch]
                 if isinstance(X_rows, csr_matrix):
                     X_dense = X_rows.toarray().astype(np.float32)
@@ -226,19 +227,34 @@ def main() -> None:
                     X_dense = np.asarray(X_rows, dtype=np.float32)
                 cp10k = np.expm1(X_dense)
                 ids_b, mask_b = _tokenize_chunk(cp10k, var_tokens, var_medians, var_in_vocab)
+                # Dynamic truncate to min(actual_max_len_in_batch, ATT_MAX_TOKENS).
+                max_len = min(int(mask_b.sum(axis=1).max()) if mask_b.size else 1, ATT_MAX_TOKENS)
+                max_len = max(max_len, 1)
+                ids_b = ids_b[:, :max_len]
+                mask_b = mask_b[:, :max_len]
                 ids = torch.from_numpy(ids_b).to(device)
                 mask = torch.from_numpy(mask_b).to(device)
                 out = att_model(input_ids=ids, attention_mask=mask, output_attentions=True)
-                att_stacked = torch.stack(out.attentions, dim=1).to(torch.float16).cpu().numpy()
+                att_stacked = torch.stack(out.attentions, dim=1).to(torch.float16).cpu().numpy()  # (B, L, H, T, T)
                 for k, gi in enumerate(gi_batch):
                     att_records.append({
                         "cell_id": str(obs_meta["cell_id"].iloc[gi]),
                         "attention": att_stacked[k],
+                        "input_ids": ids_b[k].copy(),
                     })
-        att_arr = np.stack([r["attention"] for r in att_records], axis=0)
+        # All entries have the same T (since we cap at ATT_MAX_TOKENS and pad to batch max), but T can differ across batches.
+        # Save as object array of (cell_id, attention, input_ids) tuples — readable via np.load(allow_pickle=True).
         att_cell_ids = np.array([r["cell_id"] for r in att_records], dtype=object)
-        np.savez_compressed(out_dir / "attention_sample.npz", cell_ids=att_cell_ids, attention=att_arr)
-        print(f"  saved attention_sample.npz: {att_arr.shape}")
+        att_attention = np.array([r["attention"] for r in att_records], dtype=object)
+        att_input_ids = np.array([r["input_ids"] for r in att_records], dtype=object)
+        np.savez_compressed(
+            out_dir / "attention_sample.npz",
+            cell_ids=att_cell_ids,
+            attention=att_attention,
+            input_ids=att_input_ids,
+        )
+        sizes = [r["attention"].shape for r in att_records[:5]]
+        print(f"  saved attention_sample.npz: n={len(att_records)}; first shapes {sizes}")
 
     elapsed = time.time() - t0
     meta = {

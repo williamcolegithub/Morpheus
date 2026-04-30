@@ -112,8 +112,8 @@ def fig4_attention_case_study() -> None:
 
     npz_data = np.load(npz, allow_pickle=True)
     cell_ids = [str(x) for x in npz_data["cell_ids"]]
-    attention = npz_data["attention"]  # (S, L, H, T, T) float16
-    print(f"  attention sample: {attention.shape}")
+    attention_obj = npz_data["attention"]  # object array of (L, H, T, T) per cell, T variable
+    print(f"  attention sample: {len(attention_obj)} cells, first shape {attention_obj[0].shape if len(attention_obj) else '?'}")
 
     adata = ad.read_h5ad(CELLS_H5AD, backed="r")
     obs = adata.obs[["cell_id", "cell_type_name"]].copy()
@@ -126,13 +126,23 @@ def fig4_attention_case_study() -> None:
     other_mask = ~erythroid_mask
     print(f"  erythroid cells in sample: {erythroid_mask.sum()} / {len(cell_ids)}")
 
-    # For each cell, find GATA1 position in input_ids — we don't have those saved here, so use the rank within attention's token axis: skip case study if no clear position.
-    # Fallback: aggregate mean attention per layer per head over all cells, comparing erythroid vs other on the diagonal-band strength as a sanity figure.
-    layer_means_ery = attention[erythroid_mask].astype(np.float32).mean(axis=(0, 2, 3, 4)) if erythroid_mask.any() else np.zeros(attention.shape[1])
-    layer_means_other = attention[other_mask].astype(np.float32).mean(axis=(0, 2, 3, 4)) if other_mask.any() else np.zeros(attention.shape[1])
+    # Per-layer mean attention magnitude across heads/tokens, comparing erythroid vs. other.
+    n_layers = attention_obj[0].shape[0] if len(attention_obj) else 0
+    def _layer_means(mask):
+        if not mask.any() or n_layers == 0:
+            return np.zeros(n_layers)
+        means = np.zeros(n_layers)
+        c = 0
+        for i in np.flatnonzero(mask):
+            a = attention_obj[i].astype(np.float32)  # (L, H, T, T)
+            means += a.mean(axis=(1, 2, 3))
+            c += 1
+        return means / max(c, 1)
+    layer_means_ery = _layer_means(erythroid_mask)
+    layer_means_other = _layer_means(other_mask)
 
     fig, ax = plt.subplots(figsize=(6, 4))
-    layers = np.arange(attention.shape[1])
+    layers = np.arange(n_layers)
     width = 0.35
     ax.bar(layers - width / 2, layer_means_ery, width, label=f"erythroid (n={int(erythroid_mask.sum())})")
     ax.bar(layers + width / 2, layer_means_other, width, label=f"other (n={int(other_mask.sum())})")
