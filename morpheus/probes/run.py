@@ -86,7 +86,7 @@ def layer1(model: str, seed: int) -> pd.DataFrame:
         scaler = StandardScaler(with_mean=False)
         Xtr = scaler.fit_transform(Xtr)
         Xte = scaler.transform(Xte)
-        clf = LogisticRegression(max_iter=1000, n_jobs=-1, C=1.0, multi_class="multinomial", random_state=seed)
+        clf = LogisticRegression(max_iter=1000, n_jobs=-1, C=1.0, random_state=seed)
         clf.fit(Xtr, train["cell_type"].values)
         pred = clf.predict(Xte)
         f1 = f1_score(test["cell_type"].values, pred, average="macro", zero_division=0)
@@ -288,6 +288,9 @@ def main() -> None:
         else:
             out = _result_path(probe, args.model, args.permute_labels)
         out.parent.mkdir(parents=True, exist_ok=True)
+        if args.permute_labels and len(df) > 0 and "model" in df.columns:
+            df = df.copy()
+            df["model"] = df["model"].astype(str) + "__permuted"
         if len(df) > 0:
             df.to_parquet(out, index=False)
             print(f"wrote → {out} ({len(df)} rows)")

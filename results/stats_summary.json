@@ -1,0 +1,176 @@
+{
+  "per_model": [
+    {
+      "probe": "layer1",
+      "model": "geneformer",
+      "n": 5,
+      "median": 0.380927427862307,
+      "mean": 0.353606298781775,
+      "ci95_lo": 0.29132915881998805,
+      "ci95_hi": 0.41202506582968323,
+      "metric": "macro_f1"
+    },
+    {
+      "probe": "layer1",
+      "model": "geneformer_random_init",
+      "n": 5,
+      "median": 0.23393240571164137,
+      "mean": 0.21898620876761604,
+      "ci95_lo": 0.19074743011540685,
+      "ci95_hi": 0.24325858712620732,
+      "metric": "macro_f1"
+    },
+    {
+      "probe": "layer1",
+      "model": "bag_of_genes",
+      "n": 5,
+      "median": 0.4417853735747935,
+      "mean": 0.40439134090343637,
+      "ci95_lo": 0.33927953349045525,
+      "ci95_hi": 0.4652374999199992,
+      "metric": "macro_f1"
+    },
+    {
+      "probe": "layer2",
+      "model": "geneformer",
+      "n": 375,
+      "median": 0.6977931904161412,
+      "mean": 0.6935917632392526,
+      "ci95_lo": 0.6814553617023417,
+      "ci95_hi": 0.7052972068575186,
+      "metric": "auc"
+    },
+    {
+      "probe": "layer2",
+      "model": "geneformer__permuted",
+      "n": 375,
+      "median": 0.5,
+      "mean": 0.4954792216953083,
+      "ci95_lo": 0.4850326985656603,
+      "ci95_hi": 0.5061232235361277,
+      "metric": "auc"
+    },
+    {
+      "probe": "layer2",
+      "model": "bag_of_genes",
+      "n": 375,
+      "median": 0.5808499009359841,
+      "mean": 0.5779209094596242,
+      "ci95_lo": 0.5653726894690039,
+      "ci95_hi": 0.5907813979349636,
+      "metric": "auc"
+    },
+    {
+      "probe": "layer2",
+      "model": "geneformer_random_init",
+      "n": 375,
+      "median": 0.4871794871794871,
+      "mean": 0.49276042902188866,
+      "ci95_lo": 0.48113047161561856,
+      "ci95_hi": 0.5047886156866705,
+      "metric": "auc"
+    },
+    {
+      "probe": "layer3_hub",
+      "model": "geneformer_random_init",
+      "n": 5,
+      "median": 0.43646304675716446,
+      "mean": 0.4245193887166736,
+      "ci95_lo": 0.3876712101744781,
+      "ci95_hi": 0.461367567258869,
+      "metric": "auc"
+    },
+    {
+      "probe": "layer3_hub",
+      "model": "geneformer",
+      "n": 5,
+      "median": 0.6981069958847737,
+      "mean": 0.7180203539808732,
+      "ci95_lo": 0.6872098264593194,
+      "ci95_hi": 0.754215411654858,
+      "metric": "auc"
+    },
+    {
+      "probe": "layer3_hub",
+      "model": "bag_of_genes",
+      "n": 5,
+      "median": 0.4531687242798354,
+      "mean": 0.49883515061721057,
+      "ci95_lo": 0.43365363999350925,
+      "ci95_hi": 0.5680306340042649,
+      "metric": "auc"
+    }
+  ],
+  "paired": [
+    {
+      "probe": "layer1",
+      "baseline": "geneformer_random_init",
+      "n_pairs": 5,
+      "median_delta": 0.14699502215066562,
+      "ci95_lo": 0.10047370132484201,
+      "ci95_hi": 0.1687664787034759,
+      "wilcoxon_stat": 0.0,
+      "p_value": 0.0625
+    },
+    {
+      "probe": "layer1",
+      "baseline": "bag_of_genes",
+      "n_pairs": 5,
+      "median_delta": -0.05179438582821666,
+      "ci95_lo": -0.057463720730605,
+      "ci95_hi": -0.043920214350120945,
+      "wilcoxon_stat": 0.0,
+      "p_value": 0.0625
+    },
+    {
+      "probe": "layer2",
+      "baseline": "geneformer__permuted",
+      "n_pairs": 375,
+      "median_delta": 0.20569812083249156,
+      "ci95_lo": 0.1826121665042513,
+      "ci95_hi": 0.21286495704589478,
+      "wilcoxon_stat": 3150.0,
+      "p_value": 1.5565209974049538e-52
+    },
+    {
+      "probe": "layer2",
+      "baseline": "bag_of_genes",
+      "n_pairs": 375,
+      "median_delta": 0.10689775910364141,
+      "ci95_lo": 0.09966306147844348,
+      "ci95_hi": 0.1313568071946716,
+      "wilcoxon_stat": 9433.0,
+      "p_value": 1.6698608034999853e-34
+    },
+    {
+      "probe": "layer2",
+      "baseline": "geneformer_random_init",
+      "n_pairs": 375,
+      "median_delta": 0.20431286549707606,
+      "ci95_lo": 0.18323356758493553,
+      "ci95_hi": 0.21752497346965782,
+      "wilcoxon_stat": 3427.0,
+      "p_value": 6.81697370745991e-51
+    },
+    {
+      "probe": "layer3_hub",
+      "baseline": "geneformer_random_init",
+      "n_pairs": 5,
+      "median_delta": 0.2523068050749711,
+      "ci95_lo": 0.24233245663862527,
+      "ci95_hi": 0.3636913101422904,
+      "wilcoxon_stat": 0.0,
+      "p_value": 0.0625
+    },
+    {
+      "probe": "layer3_hub",
+      "baseline": "bag_of_genes",
+      "n_pairs": 5,
+      "median_delta": 0.24493827160493825,
+      "ci95_lo": 0.13193285896734164,
+      "ci95_hi": 0.29195376625595765,
+      "wilcoxon_stat": 0.0,
+      "p_value": 0.0625
+    }
+  ]
+}
