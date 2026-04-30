@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.python-version
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# uv
+.uv-cache/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Project data — large, downloaded, or derived; never commit
+data/raw/
+data/processed/
+data/embeddings/
+data/
+
+# Results — keep small parquet tables + final figures, but extraction is reproducible so default-ignore
+results/probes/
+results/rsa/
+results/figures/*.pdf
+results/figures/*.png
+
+# Local secrets / scratch
+.env
+scratch/
