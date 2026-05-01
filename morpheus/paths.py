@@ -9,9 +9,12 @@ EMBEDDINGS = REPO / "data" / "embeddings"
 RESULTS = REPO / "results"
 
 CELLS_H5AD = DATA_PROCESSED / "cells.h5ad"
-GENE_ID_MAP = DATA_PROCESSED / "gene_id_map.parquet"
 DOROTHEA_EDGES = DATA_PROCESSED / "dorothea_edges.parquet"
 SPLITS = DATA_PROCESSED / "splits.parquet"
+
+
+def gene_id_map_path(variant: str = "Geneformer-V1-10M"):
+    return DATA_PROCESSED / f"gene_id_map_{variant}.parquet"
 
 GENEFORMER_DIR = DATA_RAW / "geneformer_weights"
 

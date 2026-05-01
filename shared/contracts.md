@@ -63,13 +63,21 @@ results/
 - One row per protein-coding gene present in `cells.h5ad`. Rows where both `in_geneformer_vocab` and `in_dorothea` are false MAY be omitted.
 - AC for upstream producer: `≥95%` of cells.h5ad genes resolve to an HGNC symbol.
 
-### `dorothea_edges.parquet`  v1
+### `dorothea_edges.parquet`  v2
 - Producer: data
 - Consumers: probe (Layer 2, Layer 3), controls (selectivity)
 - Columns: `tf_ensembl: str`, `tf_symbol: str`, `target_ensembl: str`, `target_symbol: str`, `confidence: enum("A","B","C")`, `mor: int (-1|0|1)`, `source: enum("dorothea","collectri")`.
-- Confidence levels D/E excluded for v1. Bumping to include them is a v2.
-- Source: DoRothEA human regulons via `decoupler.get_dorothea(organism='human', levels=['A','B','C'])`. Commit the package version + access date to `data/raw/dorothea/PROVENANCE.md`.
-- **Vocab restriction**: after merging with `gene_id_map.parquet`, drop edges whose TF or target is not `in_geneformer_vocab`. Log the pre/post edge count to PROVENANCE. If post-filter edge count is <50k, the data role MUST also pull CollecTRI (`decoupler.get_collectri()`) and union it in with `source="collectri"` — see PROBE-7 acceptance criteria.
+- Confidence levels D/E excluded for v1. Bumping to include them is a future change.
+- Source: DoRothEA human regulons via `decoupler.op.dorothea(organism='human', levels=['A','B','C'])` ∪ CollecTRI via `decoupler.op.collectri(organism='human')`. Commit the package version + access date to `data/raw/dorothea/PROVENANCE.md`.
+- **No model-vocab filter applied here.** Endpoints are resolved to Ensembl IDs via a *union* of every Geneformer `gene_name_id_dict_*.pkl` present on disk (gc30M for V1, gc104M for V2; gc104M wins on collision). Per-model vocab restriction happens at probe time via each model's `gene_index.parquet`, so V1 and V2 probes draw from the same canonical edge set. v2 schema is identical to v1; only the filter contract changed.
+- v1 (DEPRECATED): vocab-filtered to a single variant. Replaced because it forced V1 vs V2 probes to read different edge files.
+
+### `gene_id_map_<variant>.parquet`  v1
+- Producer: data
+- Consumers: provenance only — not consumed by probes/controls.
+- One file per `--variant` (e.g. `gene_id_map_Geneformer-V1-10M.parquet`, `gene_id_map_Geneformer-V2-104M.parquet`).
+- Columns: `ensembl_id: str` (PK in this file), `hgnc_symbol: str`, `in_geneformer_vocab: bool` (membership in *that variant's* vocab), `in_dorothea: bool`.
+- AC: `≥95%` of cells.h5ad genes resolve to an HGNC symbol.
 
 ### `cell_embeddings`  v1  (`embeddings/<model>/cells.npy` + `cell_index.parquet`)
 - Producer: embed
@@ -146,3 +154,4 @@ Primary dev machine: MacBook Air, 24 GB RAM, Apple Silicon. All code MUST run en
 
 - 2026-04-30 — Initial contract scaffold (lead). All v1 sections seeded; no producers have shipped yet, so shapes may still shift before first real publish. Bump versions once anything is materialized and consumed.
 - 2026-04-30 — Added CollecTRI fallback + early vocab restriction to `dorothea_edges.parquet` (lead). Added streaming/memmap requirement to `cell_embeddings`. Added "Operating environment" section pinning the 24 GB MacBook Air target and the 100k-cell v1 scale.
+- 2026-05-01 — `dorothea_edges.parquet` bumped to v2: removed the per-variant vocab filter so V1/V2 probes share one canonical edge file. Endpoint resolution now uses a union of every Geneformer name→ensembl dictionary on disk. `gene_id_map.parquet` split into per-variant `gene_id_map_<variant>.parquet` files (provenance only — not consumed downstream).

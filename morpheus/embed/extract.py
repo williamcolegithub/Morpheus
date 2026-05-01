@@ -32,16 +32,31 @@ DEFAULT_VARIANT = "Geneformer-V1-10M"
 
 
 def _device() -> torch.device:
+    if torch.cuda.is_available():
+        return torch.device("cuda")
     if torch.backends.mps.is_available():
         return torch.device("mps")
     return torch.device("cpu")
 
 
-def _load_dicts():
-    base = GENEFORMER_DIR / "geneformer" / "gene_dictionaries_30m"
-    with open(base / "token_dictionary_gc30M.pkl", "rb") as f:
+def _vocab_for_variant(variant: str) -> str:
+    """V1 uses 30M-cell vocab (gc30M); V2 uses 104M-cell vocab (gc104M)."""
+    return "gc104M" if variant.startswith("Geneformer-V2") else "gc30M"
+
+
+def _load_dicts(variant: str = DEFAULT_VARIANT):
+    vocab = _vocab_for_variant(variant)
+    if vocab == "gc30M":
+        base = GENEFORMER_DIR / "geneformer" / "gene_dictionaries_30m"
+        token_file = base / "token_dictionary_gc30M.pkl"
+        median_file = base / "gene_median_dictionary_gc30M.pkl"
+    else:  # gc104M — files at top of geneformer/
+        base = GENEFORMER_DIR / "geneformer"
+        token_file = base / "token_dictionary_gc104M.pkl"
+        median_file = base / "gene_median_dictionary_gc104M.pkl"
+    with open(token_file, "rb") as f:
         ensembl2token = {k: int(v) for k, v in pickle.load(f).items()}
-    with open(base / "gene_median_dictionary_gc30M.pkl", "rb") as f:
+    with open(median_file, "rb") as f:
         ensembl2median = {k: float(v) for k, v in pickle.load(f).items()}
     return ensembl2token, ensembl2median
 
@@ -95,6 +110,7 @@ def _tokenize_chunk(
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--weights", default=DEFAULT_VARIANT, help="model variant dir name OR 'random_init'")
+    p.add_argument("--variant", default=None, help="variant dir for config + vocab. Defaults to --weights when --weights is a variant name; required when --weights=random_init")
     p.add_argument("--out", default=None, help="output dir under data/embeddings/. Defaults to model name.")
     p.add_argument("--batch-size", type=int, default=8)
     p.add_argument("--chunk-size", type=int, default=1000, help="cells per tokenization chunk")
@@ -106,12 +122,13 @@ def main() -> None:
     device = _device()
     print(f"device: {device}")
 
+    variant = args.variant or (args.weights if args.weights != "random_init" else DEFAULT_VARIANT)
     out_name = args.out or ("geneformer" if args.weights == DEFAULT_VARIANT else ("geneformer_random_init" if args.weights == "random_init" else args.weights))
     out_dir = EMBEDDINGS / out_name
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"loading model: weights={args.weights}, out={out_dir}")
-    model = _load_model(args.weights, attn_implementation="sdpa")
+    print(f"loading model: weights={args.weights}, variant={variant}, vocab={_vocab_for_variant(variant)}, out={out_dir}")
+    model = _load_model(args.weights, variant=variant, attn_implementation="sdpa")
     model.eval().to(device)
     embed_dim = model.config.hidden_size
     print(f"  hidden_size={embed_dim}, layers={model.config.num_hidden_layers}, heads={model.config.num_attention_heads}")
@@ -119,7 +136,7 @@ def main() -> None:
     # Save the gene token embeddings (input embedding table) — used by Layer 2/3 probes.
     word_emb = model.embeddings.word_embeddings.weight.detach().cpu().to(torch.float32).numpy()
     gene_index_rows = []
-    ensembl2token, _ = _load_dicts()
+    ensembl2token, _ = _load_dicts(variant)
     for ensembl_id, tok in ensembl2token.items():
         if ensembl_id.startswith("ENSG"):
             gene_index_rows.append({"row": int(tok), "ensembl_id": ensembl_id})
@@ -138,7 +155,7 @@ def main() -> None:
     var_ensembl = adata.var_names.values  # ensembl IDs
     var_tokens = np.array([ensembl2token.get(e, -1) for e in var_ensembl], dtype=np.int64)
     var_in_vocab = var_tokens >= 2  # 0/1 are pad/mask
-    _, ensembl2median = _load_dicts()
+    _, ensembl2median = _load_dicts(variant)
     var_medians = np.array([ensembl2median.get(e, 1.0) for e in var_ensembl], dtype=np.float64)
     print(f"  vars in Geneformer vocab: {var_in_vocab.sum():,} / {n_genes:,}")
 
@@ -214,7 +231,9 @@ def main() -> None:
         del model
         if device.type == "mps":
             torch.mps.empty_cache()
-        att_model = _load_model(args.weights, attn_implementation="eager").eval().to(device)
+        elif device.type == "cuda":
+            torch.cuda.empty_cache()
+        att_model = _load_model(args.weights, variant=variant, attn_implementation="eager").eval().to(device)
         sorted_att_idx = sorted(att_idx_set)
         att_records = []
         with torch.no_grad():
@@ -260,7 +279,7 @@ def main() -> None:
     meta = {
         "model": out_name,
         "weights_source": args.weights,
-        "variant": DEFAULT_VARIANT,
+        "variant": variant,
         "embedding_dim": int(embed_dim),
         "n_cells": int(n_cells),
         "vocab_genes": int(var_in_vocab.sum()),

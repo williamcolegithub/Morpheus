@@ -28,7 +28,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
-from morpheus.paths import CELLS_H5AD, DOROTHEA_EDGES, EMBEDDINGS, GENE_ID_MAP, RESULTS, SPLITS
+from morpheus.paths import CELLS_H5AD, DOROTHEA_EDGES, EMBEDDINGS, RESULTS, SPLITS
 
 CELL_TYPE_MIN_CELLS = 200  # drop ultra-rare types from Layer 1; they wreck CV folds
 TF_MIN_TARGETS = 30
