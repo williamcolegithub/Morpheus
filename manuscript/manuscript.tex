@@ -60,7 +60,7 @@
 \maketitle
 
 \textbf{Status:} Draft v3 (2026-05-05). Single-author (Independent
-Researcher). Targeting bioRxiv → eLife / TMLR / PLOS Comp Bio.
+Researcher). Targeting bioRxiv $\to$ eLife / TMLR / PLOS Comp Bio.
 
 \subsection{Abstract}\label{abstract}
 
@@ -69,8 +69,8 @@ known regulatory structure, using donor-stratified linear probes on
 100,000 healthy human blood/immune cells (CELLxGENE Census) across three
 pretrained variants: V1-10M (Genecorpus-30M), V2-104M and V2-316M (both
 pretrained on \textasciitilde104M cells). Three probes: cell-type
-identity (L1), TF→target structure (L2, expression-matched negatives),
-and hub-TF identity (L3, top-decile out-degree in DoRothEA ∪ CollecTRI).
+identity (L1), TF$\to$target structure (L2, expression-matched negatives),
+and hub-TF identity (L3, top-decile out-degree in DoRothEA $\cup$ CollecTRI).
 All comparisons include a label-permutation selectivity control \citep{hewitt2019} and a bag-of-genes baseline. The within-V2 family forms
 our only clean parameter-scaling axis.
 
@@ -79,15 +79,15 @@ smallest variant} (V1-10M, AUC 0.72) and exceeds the bag-of-genes
 baseline by +0.20 AUC at every scale (CI {[}+0.13, +0.29{]} across all
 three scales) --- a gap that survives a random-initialization control at
 matched embedding dimensionality (random-init AUC 0.42 at 256d, 0.53 at 768d, 0.44 at 1152d), ruling out the alternative that the signal is
-geometric room rather than learned structure. (2) \textbf{TF→target
-probe gains are large and selectivity-passing across V1→V2 (+0.054 AUC,
-p=10⁻¹⁶, n=375 TFs) but do not improve under pure parameter scaling
-within V2} (V2-316M − V2-104M Δ=−0.003 {[}−0.014, +0.008{]}, p=0.45).
-The V1→V2 gain is therefore not separable from pretraining-corpus
+geometric room rather than learned structure. (2) \textbf{TF$\to$target
+probe gains are large and selectivity-passing across V1$\to$V2 (+0.054 AUC,
+p=10$^{-16}$, n=375 TFs) but do not improve under pure parameter scaling
+within V2} (V2-316M $-$ V2-104M $\Delta$=$-$0.003 {[}$-$0.014, +0.008{]}, p=0.45).
+The V1$\to$V2 gain is therefore not separable from pretraining-corpus
 expansion. (3) \textbf{Cell-type identity (L1) shows no measurable
-improvement under pure parameter scaling} (V2-316M − V2-104M Δ=−0.007
-{[}−0.034, +0.017{]}); V2-316M fails to exceed the bag-of-genes baseline
-(Δ=+0.019 {[}−0.001, +0.043{]}, p=0.31; we report this as ``fails to
+improvement under pure parameter scaling} (V2-316M $-$ V2-104M $\Delta$=$-$0.007
+{[}$-$0.034, +0.017{]}); V2-316M fails to exceed the bag-of-genes baseline
+($\Delta$=+0.019 {[}$-$0.001, +0.043{]}, p=0.31; we report this as ``fails to
 reject,'' not ``matches,'' because we did not perform formal equivalence
 testing).
 
@@ -129,7 +129,7 @@ the original model papers implied.
 
 A separate question, mostly unasked in the scFM literature, is what
 \emph{kind} of scaling produces the apparent gains. In large language
-models the analogous question is well posed: Kaplan et al.~(2020)
+models the analogous question is well posed: \citet{kaplan2020scaling}
 established that loss scales as a power-law in parameter count, dataset
 size, and compute over many orders of magnitude, and Hoffmann et
 al.~(2022) --- the Chinchilla paper --- showed that compute-optimal
@@ -145,7 +145,7 @@ family at 104M and 316M parameters trained on a fresh
 vocabulary. A V1-vs-V2 comparison conflates parameter count,
 pretraining-corpus size, and vocabulary in a single step. The only clean
 parameter-scaling axis the public Geneformer checkpoints offer is
-V2-104M → V2-316M (3× parameters, fixed corpus, fixed vocabulary).
+V2-104M $\to$ V2-316M (3$\times$ parameters, fixed corpus, fixed vocabulary).
 Neither the original Geneformer paper nor the recent Theodoris-group
 scaling paper \citep{venkatesh2026} isolates this axis on frozen
 embeddings.
@@ -154,7 +154,7 @@ Probing --- training a simple supervised classifier on top of frozen
 representations to ask whether a target property is linearly recoverable
 --- is the natural tool for this question. The methodology has a clean
 lineage in NLP: Alain \& Bengio (2016, preprint) introduced linear
-classifier probes for intermediate-layer analysis; Conneau et al.~(2018)
+classifier probes for intermediate-layer analysis; \citet{conneau2018}
 made probing canonical for sentence embeddings; Hewitt \& \citet{hewitt2019}
 introduced the selectivity control (a probe that succeeds on the real
 task must fail on a randomized control task) that distinguishes ``the
@@ -170,7 +170,7 @@ In this paper we ask, on a single donor-stratified human blood/immune
 cohort of 100,000 cells, three probing questions of three Geneformer
 variants (V1-10M, V2-104M, V2-316M): does the frozen embedding recover
 (i) cell-type identity at the level of CL-ontology labels, (ii)
-TF→target gene-regulatory edges, and (iii) the identity of
+TF$\to$target gene-regulatory edges, and (iii) the identity of
 high-out-degree hub transcription factors. Each comparison is paired
 with a bag-of-genes baseline, a random-initialization control at matched
 embedding dimensionality, and a Hewitt-Liang label-permutation
@@ -179,13 +179,13 @@ hub-TF identity is encoded in Geneformer's input gene-token embeddings
 at the smallest tested variant (V1-10M, AUC 0.72) and exceeds
 bag-of-genes by +0.20 AUC at every scale, with a gap that survives the
 random-initialization control at matched dimensionality --- ruling out
-the ``geometric room'' alternative. Second, we show that the large V1→V2
-gain on TF→target structure (+0.054 AUC, p=10⁻¹⁶) is not separable from
-the pretraining-corpus and vocabulary expansion that accompany the V1→V2
+the ``geometric room'' alternative. Second, we show that the large V1$\to$V2
+gain on TF$\to$target structure (+0.054 AUC, p=10$^{-16}$) is not separable from
+the pretraining-corpus and vocabulary expansion that accompany the V1$\to$V2
 transition, and that the only clean parameter-scaling axis available to
-us (V2-104M → V2-316M) shows no measurable gain. Third, we show that on
+us (V2-104M $\to$ V2-316M) shows no measurable gain. Third, we show that on
 cell-type identity Geneformer's largest publicly available variant fails
-to exceed the bag-of-genes baseline (Δ=+0.019, p=0.31; we report this as
+to exceed the bag-of-genes baseline ($\Delta$=+0.019, p=0.31; we report this as
 ``fails to reject'' rather than ``matches'' because we do not perform
 formal equivalence testing). Fourth, by isolating the parameter-only
 axis from the corpus-expansion axis, we show that for Geneformer
@@ -236,7 +236,7 @@ confidence levels A, B, and C \citep{garciaalonso2019dorothea} with CollecTRI \c
 \texttt{decoupler} Python package \citep{badiaimompel2022decoupler}. After
 resolving HGNC symbols to Ensembl IDs through a union of the Geneformer
 gc30M and gc104M gene-name dictionaries (later releases winning on
-collision), the regulon contained 73,697 directed TF→target edges across
+collision), the regulon contained 73,697 directed TF$\to$target edges across
 1,199 unique TFs. Critically, we did not apply a model-vocabulary filter
 to this edge file. Per-model vocabulary restriction happens at probe
 time through each model's gene index, which guarantees that V1 and V2
@@ -284,15 +284,15 @@ comprises approximately 316 million parameters in 18 layers of width
 1,152 with 18 heads, sharing both the gc104M vocabulary and the V2
 pretraining corpus.
 
-Three changes co-occur across the V1→V2 transition: parameter count (10×
-larger), pretraining-corpus size (\textasciitilde3.5× larger), and
-vocabulary (gc30M → gc104M, with associated changes in tokenizer
-median-expression statistics). The V1→V2 step is therefore confounded as
+Three changes co-occur across the V1$\to$V2 transition: parameter count (10$\times$
+larger), pretraining-corpus size (\textasciitilde3.5$\times$ larger), and
+vocabulary (gc30M $\to$ gc104M, with associated changes in tokenizer
+median-expression statistics). The V1$\to$V2 step is therefore confounded as
 a parameter-scaling experiment. The only clean parameter-scaling axis
-available across publicly released Geneformer checkpoints is V2-104M →
+available across publicly released Geneformer checkpoints is V2-104M $\to$
 V2-316M, which holds pretraining corpus and vocabulary fixed and triples
 parameter count. Every cross-variant comparison in this paper is
-labelled explicitly as either ``confounded (V1→V2)'' or ``parameter-only
+labelled explicitly as either ``confounded (V1$\to$V2)'' or ``parameter-only
 (within V2)''.
 
 \subsubsection{Embedding extraction}\label{embedding-extraction}
@@ -343,7 +343,7 @@ expression is being added by the foundation model. Third,
 the L2 probe with each TF's positive target set replaced by a random
 gene set of the same cardinality drawn from the model's vocabulary; a
 probe that does not collapse on this perturbation is overfitting to
-embedding capacity rather than to genuine TF→target structure.
+embedding capacity rather than to genuine TF$\to$target structure.
 
 \subsubsection{Probes}\label{probes}
 
@@ -359,7 +359,7 @@ were dropped to keep folds populated; 39 of the 71 Cell Ontology types
 in the corpus passed this threshold, retaining 98,434 of 100,000 cells.
 Features were standardized (mean-free for sparse inputs).
 
-The Layer 2 probe (TF→target identity) trains, per transcription factor,
+The Layer 2 probe (TF$\to$target identity) trains, per transcription factor,
 a binary logistic regression that distinguishes that TF's targets from a
 matched set of non-target genes, on gene embeddings. We restricted to
 TFs with at least 30 in-vocabulary targets, leaving 375 of 1,199 TFs.
@@ -377,7 +377,7 @@ The Layer 3 probe (hub identity) tests whether top-decile out-degree TFs
 are linearly separable from peripheral TFs on gene embeddings.
 Out-degree was computed on the unioned regulon, restricted to TFs whose
 Ensembl IDs lie in the model vocabulary; the top-decile threshold
-corresponded to ≥143 targets, identifying 120 of 1,194 TFs as hubs. We
+corresponded to $\geq$143 targets, identifying 120 of 1,194 TFs as hubs. We
 assessed this binary classifier by 5-fold cross-validation across TFs
 (folds drawn by uniform integer assignment), reporting AUC per fold.
 
@@ -442,11 +442,11 @@ frozen embeddings, donor-stratified five-fold splits, and identical
 preprocessing across variants. The L1 (cell-type identity) probe is
 scored across five donor-stratified folds (n=5); the L3 (hub identity)
 probe is scored across five TF-stratified folds (n=5; TF assignment to
-folds is uniform random per Methods); the L2 (TF→target edges) probe is
+folds is uniform random per Methods); the L2 (TF$\to$target edges) probe is
 scored per TF, yielding n=375 paired observations after vocabulary
 filtering. The full per-comparison statistics are reported in
 Supplementary Table S1; we summarise the four headline contrasts
-(V1→V2-104M, V1→V2-316M, within-V2, V2-316M − bag-of-genes) below and
+(V1$\to$V2-104M, V1$\to$V2-316M, within-V2, V2-316M $-$ bag-of-genes) below and
 visualise them in Figures 1--4.
 
 \subsubsection{3.1 Hub-TF identity is encoded already at the smallest
@@ -471,22 +471,22 @@ The trained-versus-random-init gap is the geometry control we care most
 about, because it rules out the trivial explanation that hub TFs are
 simply embedded into a higher-dimensional, easier-to-shatter subspace by
 the transformer architecture per se. At every dimensionality the trained
-model beat its random-init twin by a wide margin: Δ = +0.30 {[}+0.23,
-+0.36{]} at 256-d (V1), Δ = +0.18 {[}+0.12, +0.26{]} at 768-d (V2-104M),
-and Δ = +0.26 {[}+0.23, +0.33{]} at 1152-d (V2-316M). All three
+model beat its random-init twin by a wide margin: $\Delta$ = +0.30 {[}+0.23,
++0.36{]} at 256-d (V1), $\Delta$ = +0.18 {[}+0.12, +0.26{]} at 768-d (V2-104M),
+and $\Delta$ = +0.26 {[}+0.23, +0.33{]} at 1152-d (V2-316M). All three
 contrasts hit the n=5 Wilcoxon floor of p = 0.0625; given the consistent
 direction across three independent scales, the joint probability of
 three same-sign matched-dimension wins under a no-effect null is 1/64
-(sign-test, two-sided p ≈ 0.016). Performance against the bag-of-genes
-baseline was similarly stable across scales (V2-316M − bag-of-genes Δ = +0.20 {[}+0.13, +0.29{]}, p = 0.0625). Critically, scaling the corpus
+(sign-test, two-sided p $\approx$ 0.016). Performance against the bag-of-genes
+baseline was similarly stable across scales (V2-316M $-$ bag-of-genes $\Delta$ = +0.20 {[}+0.13, +0.29{]}, p = 0.0625). Critically, scaling the corpus
 and parameter count from V1 to V2-316M did \textbf{not} improve
-hub-identity readout: V2-316M − V1 Δ = -0.020 {[}-0.044, +0.026{]}, p =
-0.625, and V2-316M − V2-104M Δ = -0.011 {[}-0.026, +0.052{]}, p = 1.00
+hub-identity readout: V2-316M $-$ V1 $\Delta$ = -0.020 {[}-0.044, +0.026{]}, p =
+0.625, and V2-316M $-$ V2-104M $\Delta$ = -0.011 {[}-0.026, +0.052{]}, p = 1.00
 (Figure 2). Hub-TF identity, in other words, is fully captured at V1
-scale and neither lost nor improved by 9× more parameters and 3× more
+scale and neither lost nor improved by 9$\times$ more parameters and 3$\times$ more
 pretraining cells.
 
-\subsubsection{3.2 L2 TF→target edge readout gains from V1→V2 do not
+\subsubsection{3.2 L2 TF$\to$target edge readout gains from V1$\to$V2 do not
 survive
 within-V2}\label{l2-tftarget-edge-readout-gains-from-v1v2-do-not-survive-within-v2}
 
@@ -500,20 +500,20 @@ and 0.755 for V2-316M (Figure 1B). Bag-of-genes (median 0.581) and
 label-permuted Geneformer (median 0.500 across all three scales)
 confirmed that this signal is genuine and not a co-occurrence artefact.
 
-The V1→V2-104M jump was large and tightly estimated: paired Δ = +0.054
-{[}+0.041, +0.068{]}, Wilcoxon p = 2.4 × 10⁻¹⁶ (n = 375). V1→V2-316M was
-almost identical in magnitude (Δ = +0.051 {[}+0.038, +0.066{]}, p = 3.2
-× 10⁻¹⁵). However the within-V2 contrast was a clean null: V2-316M −
-V2-104M Δ = -0.003 {[}-0.014, +0.008{]}, Wilcoxon p = 0.45 (n = 375).
-The \textasciitilde3× jump in parameter count from 104M to 316M, holding
+The V1$\to$V2-104M jump was large and tightly estimated: paired $\Delta$ = +0.054
+{[}+0.041, +0.068{]}, Wilcoxon p = 2.4 $\times$ 10$^{-16}$ (n = 375). V1$\to$V2-316M was
+almost identical in magnitude ($\Delta$ = +0.051 {[}+0.038, +0.066{]}, p = 3.2
+$\times$ 10$^{-15}$). However the within-V2 contrast was a clean null: V2-316M $-$
+V2-104M $\Delta$ = -0.003 {[}-0.014, +0.008{]}, Wilcoxon p = 0.45 (n = 375).
+The \textasciitilde3$\times$ jump in parameter count from 104M to 316M, holding
 the pretraining corpus fixed, produced no detectable improvement on
-TF→target readout. Both V2 variants did, however, beat bag-of-genes by a
-wide margin (V2-316M − bag Δ = +0.167 {[}+0.151, +0.182{]}, p = 4 ×
-10⁻⁵⁰; V2-104M − bag indistinguishable from V2-316M − bag), so the L2
+TF$\to$target readout. Both V2 variants did, however, beat bag-of-genes by a
+wide margin (V2-316M $-$ bag $\Delta$ = +0.167 {[}+0.151, +0.182{]}, p = 4 $\times$
+10$^{-50}$; V2-104M $-$ bag indistinguishable from V2-316M $-$ bag), so the L2
 effect is real --- it simply does not scale within V2 (Figure 2). The
-most parsimonious reading is that the V1→V2 step buys most of its L2
-gain from the corpus expansion (\textasciitilde30M → \textasciitilde104M
-cells) and the gc30M→gc104M vocabulary change between Geneformer V1 and
+most parsimonious reading is that the V1$\to$V2 step buys most of its L2
+gain from the corpus expansion (\textasciitilde30M $\to$ \textasciitilde104M
+cells) and the gc30M$\to$gc104M vocabulary change between Geneformer V1 and
 V2, not from raw parameter count.
 
 \subsubsection{3.3 L1 cell-type identity does not exceed bag-of-genes at
@@ -522,15 +522,15 @@ scale}\label{l1-cell-type-identity-does-not-exceed-bag-of-genes-at-any-scale}
 
 The L1 probe trains an L2-regularised multinomial logistic regression to
 predict the donor-stratified cell-type label (39 cell types passing the
-≥200-cell threshold, of 71 in the full corpus) from the cell embedding.
+$\geq$200-cell threshold, of 71 in the full corpus) from the cell embedding.
 Mean macro-F1 per scale was 0.354 {[}0.291, 0.412{]} for V1, 0.430
 {[}0.340, 0.520{]} for V2-104M, and 0.424 {[}0.342, 0.505{]} for
 V2-316M; the bag-of-genes baseline was 0.404 {[}0.339, 0.465{]} (Figure
 1A). Both V2 variants tied with bag-of-genes within fold-level
-uncertainty: V2-316M − bag-of-genes paired Δ = +0.019 {[}-0.001,
+uncertainty: V2-316M $-$ bag-of-genes paired $\Delta$ = +0.019 {[}-0.001,
 +0.043{]}, Wilcoxon p = 0.31. We fail to reject the null that V2-316M
 cell-type readout matches bag-of-genes at this scale and fold count (n =
-5). The within-V2 contrast was likewise null: V2-316M − V2-104M Δ =
+5). The within-V2 contrast was likewise null: V2-316M $-$ V2-104M $\Delta$ =
 -0.007 {[}-0.034, +0.017{]}, Wilcoxon p = 1.00. Random-init transformers
 all performed near chance (V1-rand 0.219; V2-104M-rand 0.191;
 V2-316M-rand 0.149), confirming that the bag-of-genes baseline --- not
@@ -555,11 +555,11 @@ scale}\label{representational-similarity-is-null-at-every-scale}
 
 To complement the supervised probes we computed the Spearman correlation
 between each model's pairwise gene-embedding similarity matrix and the
-symmetric DoRothEA TF→target adjacency, restricted to in-vocab TF--TF
+symmetric DoRothEA TF$\to$target adjacency, restricted to in-vocab TF--TF
 pairs (n = 712,221 pairs per matrix). All three trained variants
-returned essentially zero RSA: V1 ρ = -0.028, V2-104M ρ = -0.004,
-V2-316M ρ = +0.022. Random-init transformers were similar (-0.001 to
--0.003), as was bag-of-genes (ρ = +0.026). No scale produced an RSA
+returned essentially zero RSA: V1 $\rho$ = -0.028, V2-104M $\rho$ = -0.004,
+V2-316M $\rho$ = +0.022. Random-init transformers were similar (-0.001 to
+-0.003), as was bag-of-genes ($\rho$ = +0.026). No scale produced an RSA
 signal that distinguished trained from untrained models. We read this as
 evidence that the regulatory information that the supervised probes
 recover from L2 and L3 is not arranged in the gene-by-gene cosine
@@ -568,7 +568,7 @@ geometry --- it is decodable, but not isotropic.
 \subsubsection{3.5 Sensitivity analyses confirm the headline
 pattern}\label{sensitivity-analyses-confirm-the-headline-pattern}
 
-Three pre-registered sensitivity analyses were run on every probe×model
+Three pre-registered sensitivity analyses were run on every probe$\times$model
 combination to stress-test the headline claims.
 
 \textbf{Probe family.} Replacing the linear probe with a small MLP (one
@@ -580,22 +580,22 @@ per-TF training sets and confirms that linear separability --- the
 property we care about for ``is information present in the embedding''
 --- is a more reliable readout here than expressive non-linear probes.
 The L1 cell-type ranking under MLP was unchanged (V2-104M MLP 0.461,
-V2-316M MLP 0.460, bag MLP 0.366, V1 MLP 0.355), so the L1 V2 ≈
+V2-316M MLP 0.460, bag MLP 0.366, V1 MLP 0.355), so the L1 V2 $\approx$
 bag-of-genes story does not flip under a more expressive probe.
 
 \textbf{Negative-sampling scheme for L2.} Switching from degree-matched
 negatives to random negatives raised every per-TF AUC (e.g.~V2-316M
 median 0.781 vs 0.755 matched), as expected when the negatives become
-easier. Crucially the V1→V2 ordering and the within-V2 null both held:
-V2-316M − V1 paired Δ = +0.069 {[}+0.062, +0.088{]} under random
-negatives vs +0.051 {[}+0.038, +0.066{]} under matched, while V2-316M −
-V2-104M remained null under both schemes. The headline claim --- V1→V2
+easier. Crucially the V1$\to$V2 ordering and the within-V2 null both held:
+V2-316M $-$ V1 paired $\Delta$ = +0.069 {[}+0.062, +0.088{]} under random
+negatives vs +0.051 {[}+0.038, +0.066{]} under matched, while V2-316M $-$
+V2-104M remained null under both schemes. The headline claim --- V1$\to$V2
 jump real, within-V2 jump absent --- is robust to negative-sampling
 choice.
 
 \textbf{Regulon source.} Restricting L2 to the higher-confidence
 DoRothEA-only subset (214 TFs) and re-running with the broader CollecTRI
-prior (304 TFs) both reproduced the V1→V2 effect (V2-316M − V1 Δ =
+prior (304 TFs) both reproduced the V1$\to$V2 effect (V2-316M $-$ V1 $\Delta$ =
 +0.067 {[}+0.054, +0.084{]} DoRothEA-only; +0.056 {[}+0.041, +0.073{]}
 CollecTRI). The within-V2 null persisted under both regulon sources.
 Selectivity audits using label permutation collapsed every L2 AUC to
@@ -605,7 +605,7 @@ all three probes.
 
 Taken together, the three probes paint a single coherent picture across
 scales (Figures 1--3): hub-TF identity is encoded already at V1 and
-saturates there; TF→target edges gain from the V1→V2 corpus and
+saturates there; TF$\to$target edges gain from the V1$\to$V2 corpus and
 architecture refresh but not from the additional 212M parameters between
 V2-104M and V2-316M; and cell-type identity remains at-or-below a
 count-vector baseline at every scale, regardless of which transformer
@@ -644,17 +644,17 @@ layer we read from.
 \subsubsection{4.1 What we can conclude}\label{what-we-can-conclude}
 
 Restricting attention to the only clean parameter-scaling axis the
-public Geneformer checkpoints offer --- V2-104M → V2-316M, a 3× increase
+public Geneformer checkpoints offer --- V2-104M $\to$ V2-316M, a 3$\times$ increase
 in parameters at fixed pretraining corpus, fixed vocabulary, and (per
 the model cards) the same training schedule --- none of our three probes
-show a measurable improvement. Cell-type identity moves by Δ=−0.007
-macro-F1 (CI {[}−0.034, +0.017{]}); TF→target structure by Δ=−0.003 AUC
-(CI {[}−0.014, +0.008{]}, p=0.45 over n=375 TFs); hub-TF identity by
-Δ=−0.011 AUC (CI {[}−0.028, +0.007{]}). The combined V1→V2 transition
-does deliver large gains on the L2 TF→target probe (+0.054 AUC, p=10⁻¹⁶)
+show a measurable improvement. Cell-type identity moves by $\Delta$=$-$0.007
+macro-F1 (CI {[}$-$0.034, +0.017{]}); TF$\to$target structure by $\Delta$=$-$0.003 AUC
+(CI {[}$-$0.014, +0.008{]}, p=0.45 over n=375 TFs); hub-TF identity by
+$\Delta$=$-$0.011 AUC (CI {[}$-$0.028, +0.007{]}). The combined V1$\to$V2 transition
+does deliver large gains on the L2 TF$\to$target probe (+0.054 AUC, p=10$^{-16}$)
 and a modest, power-limited gain on L1 cell-type identity (+0.07
 macro-F1, n=5, p=0.063), but those gains conflate three changes ---
-parameter count, \textasciitilde3.5× corpus expansion, and a vocabulary
+parameter count, \textasciitilde3.5$\times$ corpus expansion, and a vocabulary
 refresh --- and we cannot attribute them to any one factor. The cleanest
 positive finding in the paper is L3: hub topology is encoded in the
 input gene-token embeddings of V1-10M at AUC 0.72, exceeds bag-of-genes
@@ -665,7 +665,7 @@ out the alternative interpretation that 256-d (or 768-d, or 1152-d)
 Euclidean space simply has enough geometric room to separate any small
 subset of gene tokens from the rest. Hub identity is real model
 knowledge, it is encoded at the smallest variant, and it does not
-benefit measurably from 30× more parameters or \textasciitilde3.5× more
+benefit measurably from 30$\times$ more parameters or \textasciitilde3.5$\times$ more
 pretraining data. Within Geneformer, hub identity is a low-complexity
 property --- recoverable from co-expression statistics at modest model
 capacity --- that saturates immediately.
@@ -676,13 +676,13 @@ conclude}\label{what-we-cannot-conclude}
 Several things we deliberately do not claim. We do not claim that
 parameter scaling fails to help scFMs in general; we tested one model
 family and one parameter-scaling step, and a null at this specific step
-does not generalize. We do not claim to have decomposed the V1→V2 gain
+does not generalize. We do not claim to have decomposed the V1$\to$V2 gain
 into parameter-vs-data contributions; doing so cleanly would require
 checkpoints that hold all-but-one factor constant --- a 10M-parameter
 Geneformer trained on the V2 corpus, or a 104M-parameter Geneformer
 trained on Genecorpus-30M --- and neither exists in public release. We
 do not claim Geneformer ``fails to encode cell-type identity''; the
-V1→V2 gain on L1 is real, if power-limited, and the L2 TF→target signal
+V1$\to$V2 gain on L1 is real, if power-limited, and the L2 TF$\to$target signal
 at V2-316M is large and selectivity-passing. We do not claim hub
 identity is generically a low-complexity signal across all single-cell
 foundation models; the claim is specifically that \emph{Geneformer}
@@ -693,14 +693,14 @@ did not.
 
 The within-V2 nulls on L1 and L3 are explicitly power-limited. With n=5
 paired-fold observations the smallest two-sided Wilcoxon p attainable is
-0.063 and our 95\% bootstrap CI on the V2-104M → V2-316M difference
+0.063 and our 95\% bootstrap CI on the V2-104M $\to$ V2-316M difference
 rules out improvements larger than roughly +0.02 macro-F1 (L1) or +0.01
 AUC (L3); smaller effects we cannot detect at this n.~The L2 within-V2
 null is on firmer footing --- it pairs across n=375 TFs rather than 5
 folds and has a CI that excludes anything larger than +0.008 AUC --- but
 the L1 and L3 statements remain ``no measurable improvement at our
 power'' rather than ``no improvement.'' The L1 V2-316M-vs-bag-of-genes
-comparison (Δ=+0.019, p=0.31) is similarly a failure to reject the null
+comparison ($\Delta$=+0.019, p=0.31) is similarly a failure to reject the null
 hypothesis of equality, not a positive demonstration of equivalence; we
 did not pre-specify an equivalence margin and did not perform two
 one-sided tests, so the careful phrasing throughout this paper is
@@ -720,9 +720,9 @@ raw-expression baselines on tasks they were ostensibly designed to solve
 \citep{boiarsky2025}. What we add to that consensus is a controlled three-scale
 parameter sweep on a single model family, run with the full Hewitt-Liang
 selectivity discipline plus a random-initialization control at matched
-dimensionality, plus an explicit decomposition of the V1→V2 transition
+dimensionality, plus an explicit decomposition of the V1$\to$V2 transition
 into parameter and corpus components. The selectivity-passing positive
-findings we do report (L3 hub identity at every scale, L2 TF→target at
+findings we do report (L3 hub identity at every scale, L2 TF$\to$target at
 V2 scale) are stronger than the typical scFM benchmark precisely because
 of those controls.
 
@@ -752,20 +752,20 @@ The most actionable observation from this study, for users of
 Geneformer's published checkpoints, is that the apparent gain ``from
 scale'' between V1 and V2 is concentrated in the corpus-expansion and
 vocabulary-refresh axes, not in the parameter axis. Pure parameter
-scaling within the V2 family --- 3× more parameters at fixed data ---
+scaling within the V2 family --- 3$\times$ more parameters at fixed data ---
 does not measurably improve any of our three frozen-embedding probes.
 This is the single-cell analog of the Chinchilla observation \citep{hoffmann2022chinchilla} that for compute-optimal training, parameter count and
 training tokens should scale jointly, and that scaling parameters at
 fixed data is the wrong axis to push. Practitioners selecting between
 V2-104M and V2-316M as a frozen feature extractor should expect roughly
 equivalent performance on the kinds of probes we ran, and should weigh
-the 3× inference-cost difference accordingly. Practitioners considering
+the 3$\times$ inference-cost difference accordingly. Practitioners considering
 whether to push for a hypothetical V3 with more parameters at the same
 \textasciitilde104M-cell corpus should expect, by the same logic,
 diminishing returns on frozen embeddings; the more productive next axis
 is data, not parameters. Our results say nothing about the
 parameter-vs-data trade-off for fine-tuned downstream classifiers, where
-the Venkatesh et al.~(2026) result is the more relevant precedent.
+the \citet{venkatesh2026} result is the more relevant precedent.
 
 A second, more general takeaway concerns probing methodology. The
 selectivity control \citep{hewitt2019} and the random-initialization
@@ -783,8 +783,8 @@ selectivity-plus-random-init pair as a default, not an optional add-on.
 \subsubsection{4.5 Future work}\label{future-work}
 
 Four extensions seem most useful. First, systematic layer-wise probing
-of Geneformer for the L2 TF→target and L3 hub-identity probes --- the
-Civale et al.~(2026) result that intermediate layers carry task-relevant
+of Geneformer for the L2 TF$\to$target and L3 hub-identity probes --- the
+\citet{civale2026} result that intermediate layers carry task-relevant
 signal that final-layer pooling discards is established for other scFMs
 and other tasks, and our L1 layer-wise null does not generalize
 automatically to gene-relational probes. Second, replication of all
@@ -798,7 +798,7 @@ brain, gut, or tumor tissue is unknown. Fourth --- and this is a request
 to model trainers more than a research direction --- a Geneformer
 checkpoint suite that holds all-but-one factor constant (a 10M-parameter
 Geneformer on the V2 corpus, or a 104M-parameter Geneformer on
-Genecorpus-30M) would let the field cleanly decompose the V1→V2 confound
+Genecorpus-30M) would let the field cleanly decompose the V1$\to$V2 confound
 that we and the Theodoris group are currently both unable to resolve.
 Until such a suite exists, scaling claims for scFMs that compare across
 model-family transitions will continue to confound parameter count with
