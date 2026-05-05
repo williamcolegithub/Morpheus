@@ -117,6 +117,7 @@ def main() -> None:
     p.add_argument("--attention-sample", type=int, default=200, help="how many cells to keep full attention for")
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--max-cells", type=int, default=None, help="optional cap for smoke testing")
+    p.add_argument("--save-all-layers", action="store_true", help="also write per-layer mean-pooled hidden states (cells_layers.npy, shape (n_cells, n_layers+1, embed_dim)) for layer-wise probing. Adds output_hidden_states=True to forward pass.")
     args = p.parse_args()
 
     device = _device()
@@ -164,6 +165,17 @@ def main() -> None:
     cells_arr = np.lib.format.open_memmap(
         cells_path, mode="w+", dtype=np.float32, shape=(n_cells, embed_dim)
     )
+    # Optional per-layer memmap.
+    n_layers = model.config.num_hidden_layers
+    if args.save_all_layers:
+        # +1 for embeddings layer (layer 0 = pre-transformer token embedding output)
+        layers_path = out_dir / "cells_layers.npy"
+        cells_layers_arr = np.lib.format.open_memmap(
+            layers_path, mode="w+", dtype=np.float32, shape=(n_cells, n_layers + 1, embed_dim)
+        )
+        print(f"  layer-wise mode ON: writing cells_layers.npy {(n_cells, n_layers + 1, embed_dim)} = {n_cells * (n_layers + 1) * embed_dim * 4 / 1e9:.2f} GB")
+    else:
+        cells_layers_arr = None
     cell_ids_out: list[str] = []
 
     # Attention sampling: pick stratified subset of cells up front.
@@ -207,7 +219,7 @@ def main() -> None:
                 mask_np = mask_np[:, :max_len]
                 ids = torch.from_numpy(ids_np).to(device)
                 mask = torch.from_numpy(mask_np).to(device)
-                out = model(input_ids=ids, attention_mask=mask)
+                out = model(input_ids=ids, attention_mask=mask, output_hidden_states=cells_layers_arr is not None)
                 last = out.last_hidden_state
                 m = mask.unsqueeze(-1).to(last.dtype)
                 summed = (last * m).sum(dim=1)
@@ -215,10 +227,25 @@ def main() -> None:
                 pooled = (summed / lengths).cpu().to(torch.float32).numpy()
                 cells_arr[chunk_start + bs_start : chunk_start + bs_end] = pooled
 
+                if cells_layers_arr is not None:
+                    # out.hidden_states is tuple of length (n_layers+1); each (B, T, D).
+                    # Mean-pool each over non-pad tokens.
+                    layers_pooled = []
+                    for h in out.hidden_states:
+                        s = (h * m).sum(dim=1)
+                        l = lengths  # same per-row lengths
+                        layers_pooled.append((s / l).to(torch.float32))
+                    # Stack -> (B, n_layers+1, D)
+                    stacked = torch.stack(layers_pooled, dim=1).cpu().numpy()
+                    cells_layers_arr[chunk_start + bs_start : chunk_start + bs_end] = stacked
+
             cell_ids_out.extend(obs_meta["cell_id"].iloc[chunk_start:chunk_end].astype(str).tolist())
 
     cells_arr.flush()
     del cells_arr
+    if cells_layers_arr is not None:
+        cells_layers_arr.flush()
+        del cells_layers_arr
 
     cell_index = pd.DataFrame({"row": np.arange(len(cell_ids_out), dtype=np.int64), "cell_id": cell_ids_out})
     cell_index.to_parquet(out_dir / "cell_index.parquet", index=False)
