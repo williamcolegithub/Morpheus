@@ -52,6 +52,16 @@
     },
     {
       "probe": "layer1",
+      "model": "Geneformer-V2-316M_random_init",
+      "n": 5,
+      "median": 0.15125912236323275,
+      "mean": 0.14947654468644717,
+      "ci95_lo": 0.129729792376524,
+      "ci95_hi": 0.17242449603873283,
+      "metric": "macro_f1"
+    },
+    {
+      "probe": "layer1",
       "model": "geneformer__mlp",
       "n": 5,
       "median": 0.3778282555678187,
@@ -272,6 +282,16 @@
     },
     {
       "probe": "layer2",
+      "model": "Geneformer-V2-316M_random_init",
+      "n": 375,
+      "median": 0.5017800381436746,
+      "mean": 0.49825295624755145,
+      "ci95_lo": 0.4866083513621364,
+      "ci95_hi": 0.5099384330717406,
+      "metric": "auc"
+    },
+    {
+      "probe": "layer2",
       "model": "Geneformer-V2-104M__permuted",
       "n": 375,
       "median": 0.4935194416749751,
@@ -422,6 +442,16 @@
     },
     {
       "probe": "layer3_hub",
+      "model": "Geneformer-V2-316M_random_init",
+      "n": 5,
+      "median": 0.4411764705882353,
+      "mean": 0.4425987335563626,
+      "ci95_lo": 0.4060264005395851,
+      "ci95_hi": 0.4784952795933187,
+      "metric": "auc"
+    },
+    {
+      "probe": "layer3_hub",
       "model": "Geneformer-V2-104M_random_init",
       "n": 5,
       "median": 0.5228288633461047,
@@ -519,6 +549,16 @@
       "median_delta": -0.06286995961305047,
       "ci95_lo": -0.11719247847803167,
       "ci95_hi": -0.04021565654217939,
+      "wilcoxon_stat": 0.0,
+      "p_value": 0.0625
+    },
+    {
+      "probe": "layer1",
+      "baseline": "Geneformer-V2-316M_random_init",
+      "n_pairs": 5,
+      "median_delta": 0.1902395354406174,
+      "ci95_lo": 0.15741808809836805,
+      "ci95_hi": 0.25084142009228755,
       "wilcoxon_stat": 0.0,
       "p_value": 0.0625
     },
@@ -734,6 +774,16 @@
     },
     {
       "probe": "layer2",
+      "baseline": "Geneformer-V2-316M_random_init",
+      "n_pairs": 375,
+      "median_delta": 0.19464486131152803,
+      "ci95_lo": 0.17884842581142352,
+      "ci95_hi": 0.21118499272220245,
+      "wilcoxon_stat": 2963.0,
+      "p_value": 6.074693223020421e-53
+    },
+    {
+      "probe": "layer2",
       "baseline": "Geneformer-V2-104M__permuted",
       "n_pairs": 375,
       "median_delta": 0.2152777777777778,
@@ -869,6 +919,16 @@
       "median_delta": 0.23906485671191546,
       "ci95_lo": 0.1697247055484603,
       "ci95_hi": 0.3438934532083321,
+      "wilcoxon_stat": 0.0,
+      "p_value": 0.0625
+    },
+    {
+      "probe": "layer3_hub",
+      "baseline": "Geneformer-V2-316M_random_init",
+      "n_pairs": 5,
+      "median_delta": 0.2907239819004524,
+      "ci95_lo": 0.22767253868177914,
+      "ci95_hi": 0.3255494670606232,
       "wilcoxon_stat": 0.0,
       "p_value": 0.0625
     },
