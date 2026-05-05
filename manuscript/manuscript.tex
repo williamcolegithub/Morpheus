@@ -113,11 +113,9 @@ structure into the parameter space, and that more pretraining --- more
 cells, more parameters, larger vocabularies --- writes more of it.
 Neither half of that claim has been straightforward to verify.
 
-The empirical case for scFM scale is becoming more guarded. Boiarsky et
-al.~(2025) benchmark six scFMs against simple baselines and find that
+The empirical case for scFM scale is becoming more guarded. \citet{boiarsky2025} benchmark six scFMs against simple baselines and find that
 the relative ranking is task- and tissue-dependent, with raw expression
-baselines competitive on several integration metrics. Kedzierska et
-al.~(2025) report that zero-shot evaluation reveals ``reliability
+baselines competitive on several integration metrics. \citet{kedzierska2025} report that zero-shot evaluation reveals ``reliability
 challenges'' for scGPT and Geneformer that simpler methods do not
 exhibit. \citet{ahlmanneltze2025perturbation} show that on
 perturbation-effect prediction --- a task scFMs were explicitly designed
@@ -131,8 +129,7 @@ A separate question, mostly unasked in the scFM literature, is what
 \emph{kind} of scaling produces the apparent gains. In large language
 models the analogous question is well posed: \citet{kaplan2020scaling}
 established that loss scales as a power-law in parameter count, dataset
-size, and compute over many orders of magnitude, and Hoffmann et
-al.~(2022) --- the Chinchilla paper --- showed that compute-optimal
+size, and compute over many orders of magnitude, and \citet{hoffmann2022chinchilla} --- the Chinchilla paper --- showed that compute-optimal
 training requires scaling parameters and tokens jointly, so that ``more
 parameters at fixed data'' is generically sub-optimal. The Chinchilla
 result reframes any pre-Chinchilla scaling claim that increased only one
@@ -153,9 +150,9 @@ embeddings.
 Probing --- training a simple supervised classifier on top of frozen
 representations to ask whether a target property is linearly recoverable
 --- is the natural tool for this question. The methodology has a clean
-lineage in NLP: Alain \& Bengio (2016, preprint) introduced linear
+lineage in NLP: \citet{alainbengio2016probes} introduced linear
 classifier probes for intermediate-layer analysis; \citet{conneau2018}
-made probing canonical for sentence embeddings; Hewitt \& \citet{hewitt2019}
+made probing canonical for sentence embeddings; \citet{hewitt2019}
 introduced the selectivity control (a probe that succeeds on the real
 task must fail on a randomized control task) that distinguishes ``the
 property is in the embedding'' from ``the probe is expressive enough to
@@ -348,8 +345,8 @@ embedding capacity rather than to genuine TF$\to$target structure.
 \subsubsection{Probes}\label{probes}
 
 All primary probes used scikit-learn \texttt{LogisticRegression} with
-\texttt{C\ =\ 1.0}, the conservative probe class recommended by Hewitt
-and \citet{hewitt2019} and \citet{belinkov2022}. Sensitivity to probe capacity is
+\texttt{C\ =\ 1.0}, the conservative probe class recommended by
+\citet{hewitt2019} and \citet{belinkov2022}. Sensitivity to probe capacity is
 reported separately below.
 
 The Layer 1 probe (cell-type identity) is a multinomial logistic
@@ -481,9 +478,9 @@ three same-sign matched-dimension wins under a no-effect null is 1/64
 baseline was similarly stable across scales (V2-316M $-$ bag-of-genes $\Delta$ = +0.20 {[}+0.13, +0.29{]}, p = 0.0625). Critically, scaling the corpus
 and parameter count from V1 to V2-316M did \textbf{not} improve
 hub-identity readout: V2-316M $-$ V1 $\Delta$ = -0.020 {[}-0.044, +0.026{]}, p =
-0.625, and V2-316M $-$ V2-104M $\Delta$ = -0.011 {[}-0.026, +0.052{]}, p = 1.00
+0.625, and V2-316M $-$ V2-104M $\Delta$ = -0.011 {[}-0.028, +0.007{]}, p = 0.44
 (Figure 2). Hub-TF identity, in other words, is fully captured at V1
-scale and neither lost nor improved by 9$\times$ more parameters and 3$\times$ more
+scale and neither lost nor improved by 31$\times$ more parameters (V1$\to$V2-316M) and $\sim$3.5$\times$ more
 pretraining cells.
 
 \subsubsection{3.2 L2 TF$\to$target edge readout gains from V1$\to$V2 do not
@@ -526,7 +523,7 @@ $\geq$200-cell threshold, of 71 in the full corpus) from the cell embedding.
 Mean macro-F1 per scale was 0.354 {[}0.291, 0.412{]} for V1, 0.430
 {[}0.340, 0.520{]} for V2-104M, and 0.424 {[}0.342, 0.505{]} for
 V2-316M; the bag-of-genes baseline was 0.404 {[}0.339, 0.465{]} (Figure
-1A). Both V2 variants tied with bag-of-genes within fold-level
+1A). Neither V2 variant exceeded bag-of-genes within fold-level
 uncertainty: V2-316M $-$ bag-of-genes paired $\Delta$ = +0.019 {[}-0.001,
 +0.043{]}, Wilcoxon p = 0.31. We fail to reject the null that V2-316M
 cell-type readout matches bag-of-genes at this scale and fold count (n =
@@ -547,7 +544,7 @@ individual layer at 0.430, and the final-layer readout we use elsewhere
 tied for best. No middle layer crossed the bag-of-genes line. The L1
 null is therefore not an artefact of extracting from the wrong layer ---
 Geneformer V2's cell-type-discriminative information is, at best, no
-better than its input gene tokens for this 47-way immune-typing task on
+better than its input gene tokens for this 39-way immune-typing task on
 this corpus.
 
 \subsubsection{3.4 Representational-similarity is null at every
@@ -572,7 +569,7 @@ Three pre-registered sensitivity analyses were run on every probe$\times$model
 combination to stress-test the headline claims.
 
 \textbf{Probe family.} Replacing the linear probe with a small MLP (one
-hidden layer, width 256, dropout 0.2) reduced rather than improved every
+hidden layer of 64 units; sklearn defaults with early stopping) reduced rather than improved every
 L2 and L3 contrast: V1 L2 MLP median AUC was 0.587 (down from 0.698
 linear); V2-316M L2 MLP 0.701 (down from 0.755); V2-316M L3 MLP 0.567
 (down from 0.698). The drop is consistent with overfitting on small
