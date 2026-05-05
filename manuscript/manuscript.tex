@@ -217,8 +217,8 @@ and 71 distinct cell types annotated against the Cell Ontology \citep{diehl2016c
 Counts were normalized per cell to a target sum of 10,000 and
 \texttt{log1p}-transformed using \texttt{scanpy} \citep{wolf2018scanpy}. We
 chose \texttt{log1p(CP10K)} over more elaborate transformations (e.g.,
-scran pooling, residual transformations) on the basis of Ahlmann-Eltze
-and \citet{ahlmanneltze2023normalization}, who benchmarked four classes of single-cell
+scran pooling, residual transformations) on the basis of
+\citet{ahlmanneltze2023normalization}, who benchmarked four classes of single-cell
 normalization and reported that \texttt{log1p} followed by PCA performs
 as well as or better than more sophisticated alternatives across a range
 of downstream tasks. Geneformer's rank-value tokenizer expects raw
@@ -250,12 +250,12 @@ largest-first, each donor placed into the currently smallest fold), and
 a runtime assertion verified that no donor crossed fold boundaries. The
 audit passed for all 15 donors.
 
-This protocol follows the principle articulated by Zimmerman, Espeland,
-and \citet{zimmerman2021pseudoreplication} that cells from a common donor are not independent
+This protocol follows the principle articulated by
+\citet{zimmerman2021pseudoreplication} that cells from a common donor are not independent
 samples --- intra-donor expression correlations exceed inter-donor
 correlations, producing inflated type-I error and over-optimistic
 generalization estimates when within-donor cells are split across train
-and test. Although Zimmerman et al.~proposed mixed-effects models for
+and test. Although those authors proposed mixed-effects models for
 differential expression rather than a cross-validation scheme, the
 underlying non-independence applies identically to probing. We therefore
 depart from the convention established in the most-cited automatic
@@ -662,7 +662,7 @@ out the alternative interpretation that 256-d (or 768-d, or 1152-d)
 Euclidean space simply has enough geometric room to separate any small
 subset of gene tokens from the rest. Hub identity is real model
 knowledge, it is encoded at the smallest variant, and it does not
-benefit measurably from 30$\times$ more parameters or \textasciitilde3.5$\times$ more
+benefit measurably from 31$\times$ more parameters or \textasciitilde3.5$\times$ more
 pretraining data. Within Geneformer, hub identity is a low-complexity
 property --- recoverable from co-expression statistics at modest model
 capacity --- that saturates immediately.
