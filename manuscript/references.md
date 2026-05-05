@@ -214,8 +214,24 @@ Working bibliography. Organized by where each reference is likely to land in the
 
 ---
 
+---
+
+## J. Scaling laws + layer-wise probing (added in fifth pass for v2 manuscript reframe)
+
+41. **Kaplan J, McCandlish S, Henighan T, Brown TB, Chess B, Child R, Gray S, Radford A, Wu J, Amodei D.** Scaling Laws for Neural Language Models. *arXiv preprint* arXiv:2001.08361 (2020). [arXiv](https://arxiv.org/abs/2001.08361)
+    - **Verified:** 10 authors. Foundational LLM scaling-laws paper. Establishes that loss scales as a power-law with model size, dataset size, and compute over 7+ orders of magnitude. Cite in Discussion: our framing of "parameter scaling vs data scaling as separable axes" follows the paradigm Kaplan et al. set in NLP. We are explicitly testing whether single-cell foundation models exhibit the analogous decomposition; our null result on within-V2 parameter scaling is in tension with the smooth power-law expectation.
+
+42. **Hoffmann J, Borgeaud S, Mensch A, Buchatskaya E, Cai T, et al. (22 authors total).** Training Compute-Optimal Large Language Models. *NeurIPS 2022* / *arXiv:2203.15556* (2022). [arXiv](https://arxiv.org/abs/2203.15556) | [NeurIPS](https://proceedings.neurips.cc/paper_files/paper/2022/file/c1e2faff6f588870935f114ebe04a3e5-Paper-Conference.pdf)
+    - **Verified:** Chinchilla paper. Trained 400+ models from 70M to 16B parameters across 5–500B tokens; found that for compute-optimal training, model size and training tokens should scale equally. Cite in Discussion as: **the canonical demonstration that parameter scaling and data scaling are separable, distinct axes**. Our V1→V2 vs within-V2 decomposition is the single-cell analog of the question Hoffmann et al. raised at LLM scale. Our finding that V1→V2 confounds parameter and data scaling is exactly the kind of confound Chinchilla identified in the GPT-3-era LLM literature — and the finding that pure parameter scaling within Geneformer-V2 yields no measurable improvement on our probes is consistent with the broader Chinchilla-style observation that "more parameters at fixed data" is sub-optimal.
+
+43. **Alain G, Bengio Y.** Understanding intermediate layers using linear classifier probes. *arXiv preprint* arXiv:1610.01644 (2016). [arXiv](https://arxiv.org/abs/1610.01644) | [OpenReview](https://openreview.net/forum?id=HJ4-rAVtl)
+    - **Verified:** 2 authors. **Foundational layer-wise linear-probing paper.** Predates Conneau 2018 and Hewitt-Liang 2019. **Note: arXiv-only, never peer-reviewed** (submitted October 2016, ICLR 2017 workshop track per OpenReview). Mark as "preprint" when citing. Their headline finding — that linear separability of features increases monotonically along network depth, as measured by independently-trained linear "probes" — is directly relevant when we report whether intermediate Geneformer layers do or do not improve on our probes vs. the final-layer mean-pool baseline. Cite in §1.3 alongside ref. 8 (Conneau) as the linear-probe methodology lineage; cite again in the layer-wise results section once V2-104M layer-wise extraction lands.
+
+---
+
 ## Remaining open gaps
 
 - Original ChEA / hTFtarget references *if* we end up adding them as alternative regulons in a v2 of the paper. Skip for now — current bibliography is sufficient for v1 manuscript.
+- An equivalence-testing reference (Schuirmann 1987 TOST or Lakens 2017) IF we decide to actually do TOST on the L1 V2-316M vs bag-of-genes comparison. Currently we explicitly say we did not perform formal equivalence testing, so no citation needed. Add only if we change methodology.
 
 Add as we draft.
