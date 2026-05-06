@@ -7,7 +7,6 @@
 \usepackage{xcolor}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -18,7 +17,21 @@
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
-\usepackage{lmodern}
+% Typography: Palatino for body + matching math, Helvetica for sans, beraMono for tt.
+\usepackage{mathpazo}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[scaled=0.85]{beramono}
+% Section heading style + line spacing + headers + sub-caption font.
+\usepackage{titlesec}
+\titleformat{\section}{\Large\bfseries\sffamily}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\sffamily}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\sffamily}{\thesubsubsection}{0.5em}{}
+\usepackage{setspace}\setstretch{1.15}
+\usepackage{fancyhdr}\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\textit{Cole \textbar{} Probing Geneformer scaling}}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\usepackage[font={small},labelfont={bf,sf}]{caption}
 \ifPDFTeX\else
   % xetex/luatex font selection
 \fi
@@ -45,26 +58,26 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
+  colorlinks=true,
+  citecolor={blue!50!black},
+  urlcolor={blue!50!black},
+  linkcolor={blue!50!black},
+  pdfcreator={LaTeX}}
 \usepackage[round,authoryear]{natbib}
 \usepackage{graphicx}
-\usepackage{caption}
 
-\title{What scale buys for single-cell foundation models: a controlled probe of Geneformer V1, V2-104M, and V2-316M}
-\author{William Cole \\ Independent Researcher}
-\date{2026-05-05}
+\title{What scale buys for single-cell foundation models: \\[2pt]
+\large a controlled probe of Geneformer V1, V2-104M, and V2-316M}
+\author{William Cole \\[2pt] {\small Independent Researcher} \\ {\small\texttt{w.cole@zmalpha.com}}}
+\date{6 May 2026}
 
 \begin{document}
 
 \maketitle
 
-\textbf{Status:} Draft v6 (2026-05-05). Single-author (Independent
-Researcher). Targeting bioRxiv $\to$ eLife / TMLR / PLOS Comp Bio.
-
-\subsection{Abstract}\label{abstract}
-
-We probe whether Geneformer's frozen single-cell representations encode
+\begin{center}\small\itshape Preprint v1 (6 May 2026). Targeting bioRxiv $\to$ eLife / TMLR / PLOS Computational Biology.\end{center}
+\begin{abstract}
+\noindent We probe whether Geneformer's frozen single-cell representations encode
 known regulatory structure, using donor-stratified linear probes on
 100,000 healthy human blood/immune cells (CELLxGENE Census) across three
 pretrained variants: V1-10M (Genecorpus-30M), V2-104M and V2-316M (both
@@ -96,7 +109,9 @@ transitions confound parameter count with pretraining-corpus and
 vocabulary changes, and the only clean within-family parameter-scaling
 axis available to us shows no measurable gain on any probe.
 
-\subsection{1. Introduction}\label{introduction}
+\end{abstract}
+
+\section{Introduction}\label{introduction}
 
 Single-cell foundation models (scFMs) train large transformers on tens
 to hundreds of millions of single-cell transcriptomes with the promise
@@ -190,9 +205,9 @@ are concentrated in the corpus axis rather than the parameter axis ---
 the single-cell analog of the Chinchilla observation that pure parameter
 scaling at fixed data is the wrong axis to push.
 
-\subsection{2. Methods}\label{methods}
+\section{Methods}\label{methods}
 
-\subsubsection{Data acquisition}\label{data-acquisition}
+\subsection{Data acquisition}\label{data-acquisition}
 
 We assembled a single-tissue, single-condition cell corpus from the CZ
 CELLxGENE Discover Census \citep{cellxgene2025}, accessed through the \texttt{cellxgene\_census}
@@ -239,8 +254,7 @@ time through each model's gene index, which guarantees that V1 and V2
 probes evaluate against the same canonical edge set rather than against
 differently filtered subsets.
 
-\subsubsection{Donor-stratified
-cross-validation}\label{donor-stratified-cross-validation}
+\subsection{Donor-stratified cross-validation}\label{donor-stratified-cross-validation}
 
 We partitioned cells into five cross-validation folds at the donor
 level: every cell from a given donor is assigned to exactly one fold.
@@ -265,7 +279,7 @@ cell-type-classification accuracies obtained under that convention are
 not directly comparable to ours; our protocol is the more conservative
 of the two.
 
-\subsubsection{Model variants}\label{model-variants}
+\subsection{Model variants}\label{model-variants}
 
 We extracted frozen embeddings from three pretrained Geneformer
 checkpoints distributed by the original authors \citep{theodoris2023}. V1-10M comprises
@@ -291,7 +305,7 @@ parameter count. Every cross-variant comparison in this paper is
 labelled explicitly as either ``confounded (V1$\to$V2)'' or ``parameter-only
 (within V2)''.
 
-\subsubsection{Embedding extraction}\label{embedding-extraction}
+\subsection{Embedding extraction}\label{embedding-extraction}
 
 Cell embeddings were computed as the mean of the final-layer hidden
 state across non-padding tokens, following the empirical finding by
@@ -318,7 +332,7 @@ the appropriate representation for the gene-relational L2 and L3 probes,
 where the question is whether the model has organized its gene
 vocabulary in a way that respects regulatory relationships.
 
-\subsubsection{Controls}\label{controls}
+\subsection{Controls}\label{controls}
 
 Three controls were run at the embedding-extraction or probe stage; a
 fourth (the donor-leakage audit) was described above. First,
@@ -341,7 +355,7 @@ gene set of the same cardinality drawn from the model's vocabulary; a
 probe that does not collapse on this perturbation is overfitting to
 embedding capacity rather than to genuine TF$\to$target structure.
 
-\subsubsection{Probes}\label{probes}
+\subsection{Probes}\label{probes}
 
 All primary probes used scikit-learn \texttt{LogisticRegression} with
 \texttt{C\ =\ 1.0}, the conservative probe class recommended by
@@ -383,7 +397,7 @@ pairwise cosine similarity of TF gene embeddings and the binary,
 symmetrized TF-by-TF adjacency matrix from the unioned regulon, computed
 on the upper triangle over the 1,194-TF subset.
 
-\subsubsection{Sensitivity sweep}\label{sensitivity-sweep}
+\subsection{Sensitivity sweep}\label{sensitivity-sweep}
 
 To anticipate reviewer concerns about specific methodological choices,
 we re-ran the V1, V2-104M, and V2-316M probes under three perturbations
@@ -396,7 +410,7 @@ CollecTRI-only restricted views replaced the union, identifying which
 observations are robust across the two regulon resources and which are
 resource-specific.
 
-\subsubsection{Statistics}\label{statistics}
+\subsection{Statistics}\label{statistics}
 
 All paired comparisons used the Wilcoxon signed-rank test \citep{wilcoxon1945} on per-fold or per-TF differences, with bootstrap 95\% confidence
 intervals on the mean difference \citep{efron1979bootstrap} computed
@@ -410,7 +424,7 @@ the primary inferential statistic for those comparisons. We make this
 caveat explicit in every fold-level table rather than relying on the
 reader to remember the n = 5 floor.
 
-\subsubsection{Compute}\label{compute}
+\subsection{Compute}\label{compute}
 
 V1-10M extraction (cell embeddings, gene embeddings, attention sample)
 ran end-to-end on a 24 GB MacBook Air (Apple M3) using the PyTorch MPS
@@ -425,7 +439,7 @@ deterministic seed (0) is threaded through every random component (donor
 ordering, fold construction, negative sampling, train/test splits,
 bootstrap resampling, classifier initialization).
 
-\subsection{3. Results}\label{results}
+\section{Results}\label{results}
 
 We probed three pretrained Geneformer variants --- V1
 (\textasciitilde10M parameters, 256-d embeddings,
@@ -445,7 +459,7 @@ Supplementary Table S1; we summarise the four headline contrasts
 (V1$\to$V2-104M, V1$\to$V2-316M, within-V2, V2-316M $-$ bag-of-genes) below and
 visualise them in Figures 1--4.
 
-\subsubsection{3.1 Hub-TF identity is encoded already at the smallest
+\subsection{Hub-TF identity is encoded already at the smallest
 variant}\label{hub-tf-identity-is-encoded-already-at-the-smallest-variant}
 
 The L3 hub-identity probe asks whether a logistic-regression classifier
@@ -484,7 +498,7 @@ hub-identity readout: V2-316M $-$ V1 $\Delta$ = -0.020 {[}-0.052, +0.012{]}, p =
 scale and neither lost nor improved by 31$\times$ more parameters (V1$\to$V2-316M) and $\sim$3.5$\times$ more
 pretraining cells.
 
-\subsubsection{3.2 L2 TF$\to$target edge readout gains from V1$\to$V2 do not
+\subsection{L2 TF$\to$target edge readout gains from V1$\to$V2 do not
 survive
 within-V2}\label{l2-tftarget-edge-readout-gains-from-v1v2-do-not-survive-within-v2}
 
@@ -514,7 +528,7 @@ gain from the corpus expansion (\textasciitilde30M $\to$ \textasciitilde104M
 cells) and the gc30M$\to$gc104M vocabulary change between Geneformer V1 and
 V2, not from raw parameter count.
 
-\subsubsection{3.3 L1 cell-type identity does not exceed bag-of-genes at
+\subsection{L1 cell-type identity does not exceed bag-of-genes at
 any
 scale}\label{l1-cell-type-identity-does-not-exceed-bag-of-genes-at-any-scale}
 
@@ -548,7 +562,7 @@ Geneformer V2's cell-type-discriminative information is, at best, no
 better than its input gene tokens for this 39-way immune-typing task on
 this corpus.
 
-\subsubsection{3.4 Representational-similarity is null at every
+\subsection{Representational-similarity is null at every
 scale}\label{representational-similarity-is-null-at-every-scale}
 
 To complement the supervised probes we computed the Spearman correlation
@@ -563,7 +577,7 @@ evidence that the regulatory information that the supervised probes
 recover from L2 and L3 is not arranged in the gene-by-gene cosine
 geometry --- it is decodable, but not isotropic.
 
-\subsubsection{3.5 Sensitivity analyses confirm the headline
+\subsection{Sensitivity analyses confirm the headline
 pattern}\label{sensitivity-analyses-confirm-the-headline-pattern}
 
 Three pre-registered sensitivity analyses were run on every probe$\times$model
@@ -635,9 +649,9 @@ layer we read from.
 \label{fig:4}
 \end{figure}
 
-\subsection{4. Discussion}\label{discussion}
+\section{Discussion}\label{discussion}
 
-\subsubsection{4.1 What we can conclude}\label{what-we-can-conclude}
+\subsection{What we can conclude}\label{what-we-can-conclude}
 
 Restricting attention to the only clean parameter-scaling axis the
 public Geneformer checkpoints offer --- V2-104M $\to$ V2-316M, a 3$\times$ increase
@@ -666,7 +680,7 @@ pretraining data. Within Geneformer, hub identity is a low-complexity
 property --- recoverable from co-expression statistics at modest model
 capacity --- that saturates immediately.
 
-\subsubsection{4.2 What we cannot
+\subsection{What we cannot
 conclude}\label{what-we-cannot-conclude}
 
 Several things we deliberately do not claim. We do not claim that
@@ -706,7 +720,7 @@ embeddings of healthy human blood/immune cells; the signal we find or
 fail to find on those probes is silent on what a non-linear probe, a
 different tissue, or a fine-tuned classifier would see.
 
-\subsubsection{4.3 Connection to prior
+\subsection{Connection to prior
 work}\label{connection-to-prior-work}
 
 Our finding that the largest publicly available Geneformer variant fails
@@ -741,7 +755,7 @@ robust to layer choice (no intermediate layer beats final-layer
 mean-pool on macro-F1). The Civale-style layer-wise gain may exist for
 our L2 or L3 probes --- that is open.
 
-\subsubsection{4.4 What the field should take
+\subsection{What the field should take
 away}\label{what-the-field-should-take-away}
 
 The most actionable observation from this study, for users of
@@ -776,7 +790,7 @@ class in 1000-d Euclidean space'' rather than as model knowledge. We
 urge that future scFM benchmarking adopt the
 selectivity-plus-random-init pair as a default, not an optional add-on.
 
-\subsubsection{4.5 Future work}\label{future-work}
+\subsection{Future work}\label{future-work}
 
 Four extensions seem most useful. First, systematic layer-wise probing
 of Geneformer for the L2 TF$\to$target and L3 hub-identity probes --- the
@@ -801,7 +815,7 @@ model-family transitions will continue to confound parameter count with
 corpus and vocabulary change, and any single-axis interpretation of
 those comparisons will rest on assumption rather than evidence.
 
-\subsection{5. Reproducibility}\label{reproducibility}
+\section{Reproducibility}\label{reproducibility}
 
 Code, environment, and data-pull scripts are committed at
 \url{https://github.com/williamcolegithub/Morpheus} (made public concurrent with this preprint release) and archived at Zenodo, concept DOI \href{https://doi.org/10.5281/zenodo.20046043}{10.5281/zenodo.20046043} (always resolves to the latest version; the version snapshot accompanying this preprint is \texttt{v1.0-preprint}, DOI \href{https://doi.org/10.5281/zenodo.20046044}{10.5281/zenodo.20046044}, 6 May 2026). Pinned \texttt{uv.lock};
@@ -817,7 +831,7 @@ plus two AWS EC2 g5.xlarge sessions (V2-104M and V2-316M,
 as parquet files; figures are regenerable via
 \texttt{morpheus.analysis.figures\_v2}.
 
-\subsection{Outstanding tickets}\label{outstanding-tickets}
+\section*{Outstanding tickets}\label{outstanding-tickets}
 
 \begin{itemize}
 \tightlist
