@@ -471,10 +471,13 @@ the transformer architecture per se. At every dimensionality the trained
 model beat its random-init twin by a wide margin: $\Delta$ = +0.30 {[}+0.23,
 +0.36{]} at 256-d (V1), $\Delta$ = +0.18 {[}+0.12, +0.26{]} at 768-d (V2-104M),
 and $\Delta$ = +0.26 {[}+0.23, +0.33{]} at 1152-d (V2-316M). All three
-contrasts hit the n=5 Wilcoxon floor of p = 0.0625; combining them as
-binary signs gives a joint probability of $(1/2)^3 = 1/8$ under a no-effect
-null (sign-test). Performance against the bag-of-genes baseline was
-similarly stable across scales: V1 $-$ bag-of-genes $\Delta$ = +0.22 {[}+0.13, +0.29{]}, V2-104M $-$ bag $\Delta$ = +0.21 {[}+0.14, +0.27{]}, and V2-316M $-$ bag $\Delta$ = +0.20 {[}+0.13, +0.29{]} (each at p = 0.0625, the n = 5 floor). Combining all six matched contrasts (three trained-vs-random plus three trained-vs-bag) as binary signs of the trained-minus-control difference gives a joint $(1/2)^6 = 1/64$ under H$_0$ (one-sided sign-test p $\approx$ 0.016). Critically, scaling the corpus
+trained-vs-random-init contrasts hit the n=5 Wilcoxon floor of p = 0.0625
+with the same sign. Because the three random initializations are
+independent draws, treating the three matched-dimensionality contrasts as
+independent Bernoulli trials yields a joint probability of $(1/2)^3 = 1/8$
+under H$_0$ (one-sided sign-test). The trained-vs-bag-of-genes contrasts
+were similarly all positive at every scale (V1 $-$ bag $\Delta$ = +0.22 {[}+0.13, +0.29{]},
+V2-104M $-$ bag $\Delta$ = +0.21 {[}+0.14, +0.27{]}, V2-316M $-$ bag $\Delta$ = +0.20 {[}+0.13, +0.29{]}, each at p = 0.0625), but these three contrasts share the bag-of-genes baseline under H$_0$ and additionally share trained-AUC components with their corresponding trained-vs-random contrasts; we therefore do not combine them with the random-init sign-test into a single joint $p$-value, since the independence assumption such a combination would require is not supportable from the data. Critically, scaling the corpus
 and parameter count from V1 to V2-316M did \textbf{not} improve
 hub-identity readout: V2-316M $-$ V1 $\Delta$ = -0.020 {[}-0.044, +0.026{]}, p =
 0.625, and V2-316M $-$ V2-104M $\Delta$ = -0.011 {[}-0.028, +0.007{]}, p = 0.44
