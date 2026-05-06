@@ -59,7 +59,7 @@
 
 \maketitle
 
-\textbf{Status:} Draft v3 (2026-05-05). Single-author (Independent
+\textbf{Status:} Draft v6 (2026-05-05). Single-author (Independent
 Researcher). Targeting bioRxiv $\to$ eLife / TMLR / PLOS Comp Bio.
 
 \subsection{Abstract}\label{abstract}
@@ -76,8 +76,7 @@ our only clean parameter-scaling axis.
 
 \textbf{Three findings.} (1) \textbf{Hub-TF identity is encoded at the
 smallest variant} (V1-10M, AUC 0.72) and exceeds the bag-of-genes
-baseline by +0.20 AUC at every scale (CI {[}+0.13, +0.29{]} across all
-three scales) --- a gap that survives a random-initialization control at
+baseline by approximately +0.20 AUC at every scale (V1 +0.22 {[}+0.13, +0.29{]}, V2-104M +0.21 {[}+0.14, +0.27{]}, V2-316M +0.20 {[}+0.13, +0.27{]}) --- a gap that survives a random-initialization control at
 matched embedding dimensionality (random-init AUC 0.42 at 256d, 0.53 at 768d, 0.44 at 1152d), ruling out the alternative that the signal is
 geometric room rather than learned structure. (2) \textbf{TF$\to$target
 probe gains are large and selectivity-passing across V1$\to$V2 (+0.054 AUC,
@@ -233,8 +232,8 @@ confidence levels A, B, and C \citep{garciaalonso2019dorothea} with CollecTRI \c
 \texttt{decoupler} Python package \citep{badiaimompel2022decoupler}. After
 resolving HGNC symbols to Ensembl IDs through a union of the Geneformer
 gc30M and gc104M gene-name dictionaries (later releases winning on
-collision), the regulon contained 73,697 directed TF$\to$target edges across
-1,199 unique TFs. Critically, we did not apply a model-vocabulary filter
+collision), the regulon contained 73,269 directed TF$\to$target edges across
+1,194 unique TFs. Critically, we did not apply a model-vocabulary filter
 to this edge file. Per-model vocabulary restriction happens at probe
 time through each model's gene index, which guarantees that V1 and V2
 probes evaluate against the same canonical edge set rather than against
@@ -304,7 +303,7 @@ followed the published Geneformer rank-value scheme: per-cell expression
 was median-scaled using each variant's gene-median dictionary, sorted in
 descending order, truncated to the top 2,048 tokens, and dynamically
 truncated within each batch to the longest non-pad sequence. The
-pipeline streamed cells.h5ad in chunks of 1,000 cells, densifying only
+pipeline streamed cells.h5ad in chunks of 2,000 cells, densifying only
 the active chunk and writing pooled embeddings into a \texttt{numpy}
 memmap; the full expression matrix is never materialized in dense form,
 keeping peak memory below the 24 GB target on the laptop runs.
@@ -359,7 +358,7 @@ Features were standardized (mean-free for sparse inputs).
 The Layer 2 probe (TF$\to$target identity) trains, per transcription factor,
 a binary logistic regression that distinguishes that TF's targets from a
 matched set of non-target genes, on gene embeddings. We restricted to
-TFs with at least 30 in-vocabulary targets, leaving 375 of 1,199 TFs.
+TFs with at least 30 in-vocabulary targets, leaving 375 of 1,194 TFs.
 Negatives were drawn under expression-matched sampling: each gene was
 binned into one of ten quantiles of mean log-expression computed over
 \texttt{cells.h5ad}, and negatives were sampled to match the bin
@@ -401,7 +400,7 @@ resource-specific.
 
 All paired comparisons used the Wilcoxon signed-rank test \citep{wilcoxon1945} on per-fold or per-TF differences, with bootstrap 95\% confidence
 intervals on the mean difference \citep{efron1979bootstrap} computed
-in parallel. For the L1 and L3 probes, pairs are CV folds (n = 5); for
+in parallel (2,000 resamples, seed = 0). For the L1 and L3 probes, pairs are CV folds (n = 5); for
 L2, pairs are TFs (n = 375 under default settings, fewer under
 regulon-restricted sensitivities). With n = 5 paired observations, the
 smallest two-sided Wilcoxon p-value attainable is 0.0625, which we
@@ -451,7 +450,7 @@ variant}\label{hub-tf-identity-is-encoded-already-at-the-smallest-variant}
 
 The L3 hub-identity probe asks whether a logistic-regression classifier
 can discriminate the top-decile out-degree TFs in the post-vocab
-DoRothEA network from non-hub genes using the gene's own embedding. All
+unioned regulon (DoRothEA $\cup$ CollecTRI) from non-hub genes using the gene's own embedding. All
 three trained Geneformer variants supported this readout substantially
 above chance. Mean fold-level AUC was 0.72 for V1, 0.71 for V2-104M, and
 0.70 for V2-316M (Figure 1C); 95\% CIs across folds were {[}0.69,
@@ -468,18 +467,18 @@ The trained-versus-random-init gap is the geometry control we care most
 about, because it rules out the trivial explanation that hub TFs are
 simply embedded into a higher-dimensional, easier-to-shatter subspace by
 the transformer architecture per se. At every dimensionality the trained
-model beat its random-init twin by a wide margin: $\Delta$ = +0.30 {[}+0.23,
-+0.36{]} at 256-d (V1), $\Delta$ = +0.18 {[}+0.12, +0.26{]} at 768-d (V2-104M),
-and $\Delta$ = +0.26 {[}+0.23, +0.33{]} at 1152-d (V2-316M). All three
+model beat its random-init twin by a wide margin (paired bootstrap, 2,000 resamples, seed = 0): $\Delta$ = +0.294 {[}+0.242, +0.364{]} at 256-d (V1),
+$\Delta$ = +0.179 {[}+0.143, +0.215{]} at 768-d (V2-104M),
+and $\Delta$ = +0.256 {[}+0.209, +0.297{]} at 1152-d (V2-316M). All three
 trained-vs-random-init contrasts hit the n=5 Wilcoxon floor of p = 0.0625
 with the same sign. Because the three random initializations are
 independent draws, treating the three matched-dimensionality contrasts as
 independent Bernoulli trials yields a joint probability of $(1/2)^3 = 1/8$
 under H$_0$ (one-sided sign-test). The trained-vs-bag-of-genes contrasts
 were similarly all positive at every scale (V1 $-$ bag $\Delta$ = +0.22 {[}+0.13, +0.29{]},
-V2-104M $-$ bag $\Delta$ = +0.21 {[}+0.14, +0.27{]}, V2-316M $-$ bag $\Delta$ = +0.20 {[}+0.13, +0.29{]}, each at p = 0.0625), but these three contrasts share the bag-of-genes baseline under H$_0$ and additionally share trained-AUC components with their corresponding trained-vs-random contrasts; we therefore do not combine them with the random-init sign-test into a single joint $p$-value, since the independence assumption such a combination would require is not supportable from the data. Critically, scaling the corpus
+V2-104M $-$ bag $\Delta$ = +0.21 {[}+0.14, +0.27{]}, V2-316M $-$ bag $\Delta$ = +0.20 {[}+0.13, +0.27{]}, each at p = 0.0625), but these three contrasts share the bag-of-genes baseline under H$_0$ and additionally share trained-AUC components with their corresponding trained-vs-random contrasts; we therefore do not combine them with the random-init sign-test into a single joint $p$-value, since the independence assumption such a combination would require is not supportable from the data. Critically, scaling the corpus
 and parameter count from V1 to V2-316M did \textbf{not} improve
-hub-identity readout: V2-316M $-$ V1 $\Delta$ = -0.020 {[}-0.044, +0.026{]}, p =
+hub-identity readout: V2-316M $-$ V1 $\Delta$ = -0.020 {[}-0.052, +0.012{]}, p =
 0.625, and V2-316M $-$ V2-104M $\Delta$ = -0.011 {[}-0.028, +0.007{]}, p = 0.44
 (Figure 2). Hub-TF identity, in other words, is fully captured at V1
 scale and neither lost nor improved by 31$\times$ more parameters (V1$\to$V2-316M) and $\sim$3.5$\times$ more
@@ -541,9 +540,9 @@ final-layer extraction we used was suboptimal. To address this we ran a
 layer-wise probe on V2-104M, training a fresh L1 classifier on the
 gene-pooled embedding from each of the 13 transformer layers (layer 0 =
 token embedding, layer 12 = final block; Figure 4). Mean macro-F1 ranged
-from 0.393 (layer 0) to 0.430 (layer 12); layer 9 was the strongest
-individual layer at 0.430, and the final-layer readout we use elsewhere
-tied for best. No middle layer crossed the bag-of-genes line. The L1
+from 0.393 (layer 0) to 0.430 (layer 12); the final layer (layer 12)
+was the strongest at 0.430, with layer 9 tied to three decimal places
+(0.430) and no other layer within 0.005. No middle layer crossed the bag-of-genes line. The L1
 null is therefore not an artefact of extracting from the wrong layer ---
 Geneformer V2's cell-type-discriminative information is, at best, no
 better than its input gene tokens for this 39-way immune-typing task on
@@ -557,7 +556,7 @@ between each model's pairwise gene-embedding similarity matrix and the
 symmetric DoRothEA TF$\to$target adjacency, restricted to in-vocab TF--TF
 pairs (n = 712,221 pairs per matrix). All three trained variants
 returned essentially zero RSA: V1 $\rho$ = -0.028, V2-104M $\rho$ = -0.004,
-V2-316M $\rho$ = +0.022. Random-init transformers were similar (-0.001 to
+V2-316M $\rho$ = +0.022. Random-init transformers were similar (-0.003 to +0.001
 -0.003), as was bag-of-genes ($\rho$ = +0.026). No scale produced an RSA
 signal that distinguished trained from untrained models. We read this as
 evidence that the regulatory information that the supervised probes
@@ -573,8 +572,8 @@ combination to stress-test the headline claims.
 \textbf{Probe family.} Replacing the linear probe with a small MLP (one
 hidden layer of 64 units; sklearn defaults with early stopping) reduced rather than improved every
 L2 and L3 contrast: V1 L2 MLP median AUC was 0.587 (down from 0.698
-linear); V2-316M L2 MLP 0.701 (down from 0.755); V2-316M L3 MLP 0.567
-(down from 0.698). The drop is consistent with overfitting on small
+linear); V2-316M L2 MLP 0.701 (down from 0.755); V2-316M L3 MLP mean 0.567
+(down from V2-316M trained mean 0.700). The drop is consistent with overfitting on small
 per-TF training sets and confirms that linear separability --- the
 property we care about for ``is information present in the embedding''
 --- is a more reliable readout here than expressive non-linear probes.
@@ -582,15 +581,13 @@ The L1 cell-type ranking under MLP was unchanged (V2-104M MLP 0.461,
 V2-316M MLP 0.460, bag MLP 0.366, V1 MLP 0.355), so the L1 V2 $\approx$
 bag-of-genes story does not flip under a more expressive probe.
 
-\textbf{Negative-sampling scheme for L2.} Switching from degree-matched
-negatives to random negatives raised every per-TF AUC (e.g.~V2-316M
+\textbf{Negative-sampling scheme for L2.} Switching from expression-matched
+negatives to random-pair negatives raised every per-TF AUC (e.g.~V2-316M
 median 0.781 vs 0.755 matched), as expected when the negatives become
-easier. Crucially the V1$\to$V2 ordering and the within-V2 null both held:
-V2-316M $-$ V1 paired $\Delta$ = +0.069 {[}+0.062, +0.088{]} under random
-negatives vs +0.051 {[}+0.038, +0.066{]} under matched, while V2-316M $-$
-V2-104M remained null under both schemes. The headline claim --- V1$\to$V2
-jump real, within-V2 jump absent --- is robust to negative-sampling
-choice.
+easier. The V1$\to$V2 ordering held but the gap shrank under the easier
+task: V2-316M $-$ V1 paired $\Delta$ = +0.015 {[}+0.003, +0.027{]}, p = 0.011 under random
+negatives, compared with +0.051 {[}+0.038, +0.066{]} under matched. V2-316M $-$
+V2-104M remained null under both schemes. Random-pair negatives compress the dynamic range of the probe (highly expressed targets are easy regardless of regulatory signal), so the smaller V1$\to$V2 gap under random negatives is exactly the direction expected; the qualitative ordering --- V1$\to$V2 jump real, within-V2 jump absent --- is preserved.
 
 \textbf{Regulon source.} Restricting L2 to the higher-confidence
 DoRothEA-only subset (214 TFs) and re-running with the broader CollecTRI
@@ -807,7 +804,7 @@ those comparisons will rest on assumption rather than evidence.
 \subsection{5. Reproducibility}\label{reproducibility}
 
 Code, environment, and data-pull scripts are committed at
-https://github.com/williamcolegithub/Morpheus. Pinned \texttt{uv.lock};
+\url{https://github.com/williamcolegithub/Morpheus}, made public concurrent with this preprint release. Pinned \texttt{uv.lock};
 deterministic seed \texttt{0} threaded through every random component.
 Census release 2025-11-08; \texttt{decoupler} 2.1.6;
 \texttt{transformers} 4.57; PyTorch 2.11.0+mps (laptop, current PyPI
