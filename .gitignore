@@ -29,3 +29,4 @@ results/figures/*.png
 # Local secrets / scratch
 .env
 scratch/
+.claude/
