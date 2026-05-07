@@ -33,10 +33,13 @@ This table reports every paired contrast referenced in the main text. Pairing un
 {\small
 \setlength{\tabcolsep}{3pt}
 \begin{longtable}{@{}l p{4.6cm} r r r r r@{}}
+\caption{Per-comparison paired statistics for every contrast referenced in the main text. Sign convention: $\Delta = \text{(row A)} - \text{(row B)}$; positive values favor row A. Wilcoxon $p$-values are two-sided. ``random-init'' denotes the matched-dimension geometry-falsifying control (256-d for V1-10M, 768-d for V2-104M, 1152-d for V2-316M). ``neg=random'' denotes the L2 sensitivity variant where TF--non-target negatives are sampled from the full vocabulary rather than matched within the same regulon's empirical degree distribution.}
+\label{tab:s1-per-comparison} \\
 \toprule
 \textbf{Probe} & \textbf{Comparison (A \(-\) B)} & \(\boldsymbol{n}\) & \(\boldsymbol{\Delta}\) & \textbf{CI low} & \textbf{CI high} & \(\boldsymbol{p}\) \\
 \midrule
 \endfirsthead
+\multicolumn{7}{l}{\textit{Table S1 (continued)}}\\
 \toprule
 \textbf{Probe} & \textbf{Comparison (A \(-\) B)} & \(\boldsymbol{n}\) & \(\boldsymbol{\Delta}\) & \textbf{CI low} & \textbf{CI high} & \(\boldsymbol{p}\) \\
 \midrule
@@ -69,8 +72,6 @@ L3 (hub identity) & V1-10M  $-$ V1-10M random-init    &   5 &  0.2935 &  0.2423 
 L3 (hub identity) & V2-104M $-$ V2-104M random-init   &   5 &  0.1790 &  0.1426 &  0.2154 & 0.0625 \\
 L3 (hub identity) & V2-316M $-$ V2-316M random-init   &   5 &  0.2556 &  0.2136 &  0.2966 & 0.0625 \\
 \bottomrule
-\caption{Per-comparison paired statistics for every contrast referenced in the main text. Sign convention: $\Delta = \text{(row A)} - \text{(row B)}$; positive values favor row A. Wilcoxon $p$-values are two-sided. ``random-init'' denotes the matched-dimension geometry-falsifying control (256-d for V1-10M, 768-d for V2-104M, 1152-d for V2-316M). ``neg=random'' denotes the L2 sensitivity variant where TF--non-target negatives are sampled from the full vocabulary rather than matched within the same regulon's empirical degree distribution.}
-\label{tab:s1-per-comparison}
 \end{longtable}
 }
 

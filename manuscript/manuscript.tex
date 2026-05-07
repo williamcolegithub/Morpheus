@@ -572,8 +572,7 @@ between each model's pairwise gene-embedding similarity matrix and the
 symmetric DoRothEA TF$\to$target adjacency, restricted to in-vocab TF--TF
 pairs (n = 712,221 pairs per matrix). All three trained variants
 returned essentially zero RSA: V1 $\rho$ = -0.028, V2-104M $\rho$ = -0.004,
-V2-316M $\rho$ = +0.022. Random-init transformers were similar (-0.003 to +0.001
--0.003), as was bag-of-genes ($\rho$ = +0.026). No scale produced an RSA
+V2-316M $\rho$ = +0.022. Random-init transformers were similarly null (V1 random-init $\rho$ = +0.001, V2-104M $\rho$ = -0.002, V2-316M $\rho$ = -0.003), as was bag-of-genes ($\rho$ = +0.026). No scale produced an RSA
 signal that distinguished trained from untrained models. We read this as
 evidence that the regulatory information that the supervised probes
 recover from L2 and L3 is not arranged in the gene-by-gene cosine
