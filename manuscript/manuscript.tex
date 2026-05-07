@@ -68,14 +68,16 @@
 
 \title{What scale buys for single-cell foundation models: \\[2pt]
 \large a controlled probe of Geneformer V1, V2-104M, and V2-316M}
-\author{William Cole \\[2pt] {\small Baltimore AI, Baltimore, MD, USA} \\ {\small\texttt{info@baltimoreai.org}}}
+\author{William Cole \\[2pt]
+{\small Baltimore AI, Baltimore, MD, USA} \\
+{\small\texttt{info@baltimoreai.org} \,\textbar\, ORCID \href{https://orcid.org/0009-0004-0578-9853}{0009-0004-0578-9853}}}
 \date{6 May 2026}
 
 \begin{document}
 
 \maketitle
 
-\begin{center}\small\itshape Preprint v1 (6 May 2026). Targeting bioRxiv $\to$ eLife / TMLR / PLOS Computational Biology.\end{center}
+\begin{center}\small\itshape Project: \textbf{Morpheus}. Preprint v1, 6 May 2026.\end{center}
 \begin{abstract}
 \noindent We probe whether Geneformer's frozen single-cell representations encode
 known regulatory structure, using donor-stratified linear probes on
@@ -831,17 +833,25 @@ plus two AWS EC2 g5.xlarge sessions (V2-104M and V2-316M,
 as parquet files; figures are regenerable via
 \texttt{morpheus.analysis.figures\_v2}.
 
-\section*{Outstanding tickets}\label{outstanding-tickets}
+\section*{Data availability}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{PROBE-30} bioRxiv submission.
-\item
-  \textbf{PROBE-31} preprint announcement and outreach.
-\item
-  \textbf{PROBE-32} TMLR / eLife / PLOS Comp Bio peer-reviewed submission.
-\end{itemize}
+All data used in this work are publicly available from existing repositories. The single-cell expression corpus is the human blood/immune subset of the CZ CELLxGENE Census release 2025-11-08, accessed via the \texttt{cellxgene\_census} Python package \citep{cellxgene2025}. Transcription-factor regulons are DoRothEA confidence levels A/B/C \citep{garciaalonso2019dorothea} and CollecTRI \citep{mullerdott2023collectri}, both accessed via \texttt{decoupler} \citep{badiaimompel2022decoupler}. Pretrained Geneformer model weights and gene-vocabulary dictionaries are distributed at \url{https://huggingface.co/ctheodoris/Geneformer} \citep{theodoris2023}. The exact data-pull scripts used to fetch and preprocess these resources are committed in the project repository (see Code availability).
+
+\section*{Code availability}
+
+The full reproducible pipeline --- data acquisition, embedding extraction, probe runners, sensitivity sweep, statistics, and figure generation --- is committed at \url{https://github.com/williamcolegithub/Morpheus} under the MIT License, and archived at Zenodo with concept DOI \href{https://doi.org/10.5281/zenodo.20046043}{10.5281/zenodo.20046043} (the v1.0-preprint snapshot accompanying this manuscript is at DOI \href{https://doi.org/10.5281/zenodo.20046044}{10.5281/zenodo.20046044}). All per-fold and per-TF results, the stats summary, the bibliography, and the figure-generation source are included.
+
+\section*{Acknowledgments}
+
+The author thanks the developers of the open-source resources this work depends on: the CZ CELLxGENE team for the Census infrastructure; the Saez-Rodriguez group for DoRothEA, CollecTRI, and \texttt{decoupler}; the Theodoris group for releasing Geneformer weights, vocabulary dictionaries, and rank-value tokenization code; and the maintainers of \texttt{scanpy}, \texttt{anndata}, \texttt{scikit-learn}, \texttt{transformers}, and PyTorch. Compute for V2-104M and V2-316M extractions was self-funded on AWS EC2.
+
+\section*{Competing interests}
+
+The author declares no competing interests.
+
+\section*{Funding}
+
+This work received no external funding. Compute and infrastructure costs were self-funded.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
