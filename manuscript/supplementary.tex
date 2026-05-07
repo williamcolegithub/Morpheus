@@ -1,0 +1,82 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+
+\titleformat{\section}{\Large\bfseries}{\thesection.}{0.6em}{}
+
+\title{\textbf{Supplementary Materials} \\[6pt]
+{\large What scale buys for single-cell foundation models: a controlled probe of Geneformer V1, V2-104M, and V2-316M}}
+\author{William Cole \\[2pt]
+{\small Baltimore AI, Baltimore, MD, USA} \\
+{\small\texttt{info@baltimoreai.org}}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Per-comparison paired statistics (Supplementary Table S1)}
+
+This table reports every paired contrast referenced in the main text. Pairing units differ by probe: L1 and L3 are paired across the five donor folds (\(n=5\)); L2 is paired across regulons \(\times\) folds (\(n=375\), one paired observation per TF \(\times\) fold combination retained after vocabulary filtering and minimum-positive-count thresholding). \(\Delta\) is the mean paired difference (row 1 \(-\) row 2). The 95\% CI is a 2{,}000-iteration percentile bootstrap over paired differences (seed 0). \(p\) is the two-sided Wilcoxon signed-rank statistic. With \(n=5\) the smallest attainable two-sided Wilcoxon \(p\) is \(2 \times (1/2)^5 = 0.0625\); a value of \(0.0625\) indicates the strongest possible non-tied paired-rank evidence the test can produce at this sample size, not a marginal result.
+
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{l p{6.4cm} r r r r r}
+\toprule
+\textbf{Probe} & \textbf{Comparison (A \(-\) B)} & \(\boldsymbol{n}\) & \(\boldsymbol{\Delta}\) & \textbf{CI low} & \textbf{CI high} & \(\boldsymbol{p}\) \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Probe} & \textbf{Comparison (A \(-\) B)} & \(\boldsymbol{n}\) & \(\boldsymbol{\Delta}\) & \textbf{CI low} & \textbf{CI high} & \(\boldsymbol{p}\) \\
+\midrule
+\endhead
+% --- L1 ---
+L1 (cell-type) & V2-104M $-$ V1-10M           &   5 &  0.0765 &  0.0402 &  0.1172 & 0.0625 \\
+L1 (cell-type) & V2-316M $-$ V1-10M           &   5 &  0.0700 &  0.0472 &  0.0927 & 0.0625 \\
+L1 (cell-type) & V2-316M $-$ V2-104M          &   5 & $-$0.0065 & $-$0.0342 &  0.0171 & 1.000 \\
+L1 (cell-type) & V2-316M $-$ bag-of-genes     &   5 &  0.0192 & $-$0.0011 &  0.0425 & 0.312 \\
+L1 (cell-type) & V2-104M $-$ bag-of-genes     &   5 &  0.0257 & $-$0.0100 &  0.0632 & 0.438 \\
+L1 (cell-type) & V1-10M  $-$ bag-of-genes     &   5 & $-$0.0508 & $-$0.0575 & $-$0.0439 & 0.0625 \\
+\midrule
+% --- L2 ---
+L2 (TF$\to$target) & V2-104M $-$ V1-10M       & 375 &  0.0545 &  0.0407 &  0.0679 & $2.4\times10^{-16}$ \\
+L2 (TF$\to$target) & V2-316M $-$ V1-10M       & 375 &  0.0513 &  0.0380 &  0.0657 & $3.2\times10^{-15}$ \\
+L2 (TF$\to$target) & V2-316M $-$ V2-104M      & 375 & $-$0.0032 & $-$0.0138 &  0.0083 & 0.447 \\
+L2 (TF$\to$target) & V2-316M $-$ bag-of-genes & 375 &  0.1670 &  0.1516 &  0.1830 & $4.4\times10^{-50}$ \\
+L2 (TF$\to$target) & V2-104M $-$ bag-of-genes & 375 &  0.1702 &  0.1538 &  0.1869 & $6.8\times10^{-48}$ \\
+L2 (TF$\to$target) & V1-10M  $-$ bag-of-genes & 375 &  0.1157 &  0.0992 &  0.1319 & $1.7\times10^{-34}$ \\
+L2 (TF$\to$target, neg=random) & V2-316M $-$ V1-10M & 375 &  0.0149 &  0.0033 &  0.0268 & 0.0111 \\
+\midrule
+% --- L3 ---
+L3 (hub identity) & V2-104M $-$ V1-10M        &   5 & $-$0.0090 & $-$0.0551 &  0.0264 & 1.000 \\
+L3 (hub identity) & V2-316M $-$ V1-10M        &   5 & $-$0.0199 & $-$0.0532 &  0.0131 & 0.625 \\
+L3 (hub identity) & V2-316M $-$ V2-104M       &   5 & $-$0.0109 & $-$0.0284 &  0.0066 & 0.438 \\
+L3 (hub identity) & V1-10M  $-$ bag-of-genes  &   5 &  0.2192 &  0.1319 &  0.2920 & 0.0625 \\
+L3 (hub identity) & V2-104M $-$ bag-of-genes  &   5 &  0.2102 &  0.1376 &  0.2728 & 0.0625 \\
+L3 (hub identity) & V2-316M $-$ bag-of-genes  &   5 &  0.1993 &  0.1332 &  0.2652 & 0.0625 \\
+L3 (hub identity) & V1-10M  $-$ V1-10M random-init    &   5 &  0.2935 &  0.2423 &  0.3637 & 0.0625 \\
+L3 (hub identity) & V2-104M $-$ V2-104M random-init   &   5 &  0.1790 &  0.1426 &  0.2154 & 0.0625 \\
+L3 (hub identity) & V2-316M $-$ V2-316M random-init   &   5 &  0.2556 &  0.2136 &  0.2966 & 0.0625 \\
+\bottomrule
+\caption{Per-comparison paired statistics for every contrast referenced in the main text. Sign convention: $\Delta = \text{(row A)} - \text{(row B)}$; positive values favor row A. Wilcoxon $p$-values are two-sided. ``random-init'' denotes the matched-dimension geometry-falsifying control (256-d for V1-10M, 768-d for V2-104M, 1152-d for V2-316M). ``neg=random'' denotes the L2 sensitivity variant where TF--non-target negatives are sampled from the full vocabulary rather than matched within the same regulon's empirical degree distribution.}
+\label{tab:s1-per-comparison}
+\end{longtable}
+
+\section{Notes on interpretation}
+
+\paragraph{Why $p = 0.0625$ recurs at $n=5$.} The two-sided Wilcoxon signed-rank test on five paired observations cannot produce a $p$-value below $2 \times (1/2)^5 = 0.0625$ when all paired differences share a sign. Every $p = 0.0625$ row in this table is therefore the smallest-attainable Wilcoxon $p$ on five donor folds, not a near-miss. The companion 95\% bootstrap CI is the more informative effect-size summary at this sample size, and is the reason every per-comparison interpretation in the main text is anchored on the CI rather than $p$ alone.
+
+\paragraph{Why the L3 hub-identity gap is reported as the strongest finding.} Three trained-vs.-random-init contrasts at L3 (V1-10M, V2-104M, V2-316M) each achieve the floor $p = 0.0625$ with non-overlapping CIs around $\Delta \approx 0.18$--$0.29$. Treating the three random initializations as independent (they are, by construction --- different seed, different draw of weights at each scale), the joint sign-test probability of all three trained-versus-random contrasts pointing the same direction under $H_0$ is $(1/2)^3 = 0.125$, and the joint probability that all three exceed $\Delta = 0$ by more than the smallest observed CI lower bound (here $0.1426$) is substantially smaller. The main-text interpretation deliberately walks back to $(1/2)^3$ rather than aggregating across the trained-versus-bag-of-genes rows because those latter rows share the same trained AUCs across model scales (within-row dependence) and the same bag-of-genes baseline across the three scale rows (cross-row dependence), so they cannot be combined as independent sign tests.
+
+\paragraph{L1 prose convention.} The main text reports L1 as ``fails to exceed bag-of-genes'' rather than ``matches'' or ``ties'' bag-of-genes. The data here support that framing: the V2-316M $-$ bag-of-genes contrast at L1 has $\Delta = +0.019$ with CI $[-0.001, +0.043]$ and Wilcoxon $p = 0.31$, which fails to reject the null but does not constitute a formal equivalence test against any pre-specified equivalence margin.
+
+\end{document}
